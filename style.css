@@ -1,39 +1,39 @@
 * {
     margin: 0;
     padding: 0;
-    overflow: hidden;
     font-family: Arial, Helvetica, sans-serif;
 }
 
-.nav {
-    width: auto;
-    height: 80px;
-    position: fixed;
-    top: 1%;
-    left: 50%;
-    transform: translateX(-50%);
+.container {
+    padding-top: 100px; /* Ajuste para evitar que el contenido se superponga con la barra de navegación */
+}
+
+.controls {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: space-around;
-    transition: opacity .5s;
+}
+
+.nav {
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
     background: linear-gradient(to right, #4568DC, #b06ab3);
     padding: 10px;
     border-radius: 10px;
     border: 3px solid white;
+    z-index: 1000;
 }
 
-.nav div,
 button,
-input {
+input[type="color"],
+input[type="range"] {
     margin: 5px;
 }
 
-.nav:hover {
-    cursor: pointer;
-}
-
-button:hover {
-    cursor: pointer;
+canvas {
+    margin-bottom: 20px;
 }
 
 .clr {
@@ -114,7 +114,7 @@ input[type="color"] {
 }
 
 .emoji {
-    font: size 40px;
+    font-size: 40px;
     padding-bottom: 10px;
 }
 
@@ -159,3 +159,31 @@ input[type="color"] {
 .modal-dialog {
     max-width: 800px;
 }
+.chat-popup {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    background-color: #f1f1f1;
+    border: 1px solid #ccc;
+    z-index: 9;
+    display: none;
+    padding: 15px;
+    border-radius: 5px;
+}
+
+.chat-popup .chat-container {
+    max-width: 300px;
+}
+
+/* Estilo para la pestaña de la esquina inferior derecha */
+#chatTab {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background-color: #007bff;
+    color: white;
+    padding: 10px;
+    border-top-left-radius: 5px;
+    cursor: pointer;
+}
+

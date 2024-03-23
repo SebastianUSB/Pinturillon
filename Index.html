@@ -4,33 +4,55 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-pzjw8f+wn6mz68rXld0PlQn61k+75UBHdi8yh2CbG0nVbfe+VpXqLl3I5Y5Zb8qJ" crossorigin="anonymous"></script>
+    <script src="drawingscript.js" defer></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <link rel="stylesheet" href="style.css">  
-    <script src="drawingscript.js" defer></script>  
+    <link rel="stylesheet" href="style.css">    
     <title>Document</title>
 </head>
 <body>
     <div class="container">
-        <canvas id="canvas"></canvas>
-        <div class="d-flex justify-content-center align-items-center mt-3">
-            <div class="clr" data-clr="#000"></div>
-            <div class="clr" data-clr="red"></div>
-            <div class="clr" data-clr="orange"></div>
-            <div class="clr" data-clr="blue"></div>
-            <div class="clr" data-clr="purple"></div>
-            <div class="clr" data-clr="yellowgreen"></div>
-            <div class="clr" data-clr="yellow"></div>
-            <div class="clr" data-clr="#fff"></div>
-            <button class="clear btn btn-primary">Clear</button>
-            <button class="save btn btn-primary">Save</button>
-            <input type="color" value="#FFFFF" id="favcolor" class="form-control" style="width: 60px;">
-            <input type="range" name="ageInputName" id="ageInputId" value="5" class="form-range" min="1" max="10">
-            <output id="ageOutputId" class="ms-2">5</output>
+        <div class="row">
+            <div class="col">
+                <div class="nav d-flex justify-content-center align-items-center">
+                    
+                    <div class="controls">
+                        <div class="d-flex justify-content-center align-items-center mt-3">
+                            <div class="clr" data-clr="#000"></div>
+                            <div class="clr" data-clr="red"></div>
+                            <div class="clr" data-clr="orange"></div>
+                            <div class="clr" data-clr="blue"></div>
+                            <div class="clr" data-clr="purple"></div>
+                            <div class="clr" data-clr="yellowgreen"></div>
+                            <div class="clr" data-clr="yellow"></div>
+                            <div class="clr" data-clr="#fff"></div>
+                        </div>
+                        <div class="d-flex justify-content-center mt-3">
+                            <button class="clear btn btn-primary">Clear</button>
+                            <button class="save btn btn-primary">Save</button>
+                            <input type="color" value="#FFFFF" id="favcolor" class="form-control" style="width: 60px;">
+                            <input type="range" name="ageInputName" id="ageInputId" value="5" class="form-range" min="1" max="10">
+                            <output id="ageOutputId" class="ms-2">5</output>
+                        </div>
+                    </div>
+                </div>
+                <canvas id="canvas"></canvas>
+                <div id="chatPopup" class="chat-popup">
+                    <!-- Contenido del chat -->
+                    <div class="chat-container">
+                        <h3>Chat</h3>
+                        <div class="chat-messages">
+                            <!-- Mensajes del chat -->
+                        </div>
+                        <input type="text" placeholder="Escribe un mensaje...">
+                        <button class="btn btn-primary">Enviar</button>
+                        <button class="btn btn-danger" id="closeChat">Cerrar</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-
-    
-
+    <!-- Pestaña del chat -->
+    <div id="chatTab" class="chat-tab">Chat</div>
 </body>
 </html>
-

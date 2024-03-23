@@ -38,22 +38,43 @@ clearBtn.addEventListener("click", ()=>{
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 });
 
-canvas.addEventListener("mousedown",(e)=> draw =true);
-canvas.addEventListener("mouseup",(e)=>draw= false);
+canvas.addEventListener("mousedown", (e) => {
+    draw = true;
+    prevX = e.offsetX;
+    prevY = e.offsetY;
+});
 
-canvas.addEventListener("mousemove",(e)=>{
-    if(prevX ==null || prevY ==null|| !draw){
-    prevX=e.clientX;
-    prevY= e.clientY;
-    return}
-    let currentX =e.clientX;
-    let currentY =e.clientY;
+canvas.addEventListener("mouseup", () => {
+    draw = false;
+});
+
+canvas.addEventListener("mousemove", (e) => {
+    if (!draw) return;
+
+    let currentX = e.offsetX;
+    let currentY = e.offsetY;
 
     ctx.beginPath();
     ctx.moveTo(prevX, prevY);
     ctx.lineTo(currentX, currentY);
     ctx.stroke();
 
-    prevX=currentX;
+    prevX = currentX;
     prevY = currentY;
 });
+
+// Función para abrir el chat
+function openChat() {
+    document.getElementById("chatPopup").style.display = "block";
+}
+
+// Función para cerrar el chat
+function closeChat() {
+    document.getElementById("chatPopup").style.display = "none";
+}
+
+// Evento para abrir el chat al hacer clic en la pestaña
+document.getElementById("chatTab").addEventListener("click", openChat);
+
+// Evento para cerrar el chat al hacer clic en el botón de cerrar
+document.getElementById("closeChat").addEventListener("click", closeChat);
