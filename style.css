@@ -1,0 +1,161 @@
+* {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.nav {
+    width: auto;
+    height: 80px;
+    position: fixed;
+    top: 1%;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    transition: opacity .5s;
+    background: linear-gradient(to right, #4568DC, #b06ab3);
+    padding: 10px;
+    border-radius: 10px;
+    border: 3px solid white;
+}
+
+.nav div,
+button,
+input {
+    margin: 5px;
+}
+
+.nav:hover {
+    cursor: pointer;
+}
+
+button:hover {
+    cursor: pointer;
+}
+
+.clr {
+    height: 35px;
+    width: 35px;
+    background-color: blue;
+    border-radius: 50%;
+    border: 3px solid white;
+    transition: transform .5s;
+}
+
+.clr:hover {
+    transform: scale(1.2);
+}
+
+.clr:nth-child(1) {
+    background-color: black;
+}
+
+.clr:nth-child(2) {
+    background-color: red;
+}
+
+.clr:nth-child(3) {
+    background-color: orange;
+}
+
+.clr:nth-child(4) {
+    background-color: blue;
+}
+
+.clr:nth-child(5) {
+    background-color: purple;
+}
+
+.clr:nth-child(6) {
+    background-color: yellowgreen;
+}
+
+.clr:nth-child(7) {
+    background-color: yellow;
+}
+
+.clr:nth-child(8) {
+    background-color: white;
+}
+
+button {
+    border: none;
+    outline: none;
+    padding: .6em 1em;
+    border-radius: 3px;
+    color: white;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.save {
+    background-color: #0f64d4;
+}
+
+input[type="color"] {
+    height: 40px;
+}
+
+#ageOutputId {
+    color: white;
+    font-weight: bold;
+    font-size: 15pt;
+}
+
+#ageInputId {
+    background: linear-gradient(to right, #00042b 0%, #004e92 100%);
+    outline: none;
+    border-radius: 5px;
+    border: 3px solid white;
+    accent-color: white;
+}
+
+.emoji {
+    font: size 40px;
+    padding-bottom: 10px;
+}
+
+.avatar {
+    position: relative;
+    display: inline-block;
+    margin: 0 auto;
+}
+
+.avatar img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    display: block;
+}
+
+.avatar .edit-icon {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: #fff;
+    border-radius: 50%;
+    padding: 5px;
+    cursor: pointer;
+    border: 1px solid #ddd;
+}
+
+.avatar-select {
+    width: 60px;
+    height: 60px;
+    cursor: pointer;
+    border-radius: 50%;
+    margin-right: 10px;
+    border: 2px solid transparent;
+}
+
+.avatar-select:hover,
+.avatar-select.selected {
+    border-color: #007bff;
+}
+
+.modal-dialog {
+    max-width: 800px;
+}
