@@ -64,6 +64,17 @@ document.getElementById('show8').addEventListener('click', function() {
     }
 });
 
+// Abrir y cerrar ventana (Salas)
+
+document.getElementById('sala1').addEventListener('click', function() {
+    var container = document.getElementById('containers1');
+    if (container.style.display === 'block') {
+        container.style.display = 'none'; // Si está visible, ocultarlo
+    } else {
+        container.style.display = 'block'; // Si está oculto, mostrarlo
+    }
+});
+
 //Agregar palabra
 
 document.addEventListener('DOMContentLoaded', function(){
@@ -221,20 +232,30 @@ function cargarCategorias() {
         const selectEditar = document.getElementById('seleccionCategoriaEditar');
         const selectAsociarC = document.getElementById('seleccionCategoriaPalabra');
         const selectDesvincularC = document.getElementById('seleccionCategoriaDesvincular');
+        // Categoria para crear la sala de juego
+        const selectSalasC = document.getElementById('seleccionCategoriaJuego')
+        //--------------------------------------
         selectEliminar.innerHTML = '<option value="">Selecciona una categoría para Eliminar</option>';
         selectEditar.innerHTML = '<option value="">Selecciona una categoría para Editarla</option>';
         selectAsociarC.innerHTML = '<option value="">Selecciona una categoría para Asociar</option>';
         selectDesvincularC.innerHTML = '<option value="">Selecciona una categoría para Desvincular</option>';
+        selectSalasC.innerHTML = '<option value="">Selecciona una categoría para tu sala de juego</option>';
 
         data.forEach(categoria => {
             let optionEliminar = new Option(categoria.nombre, categoria.id_categoria);
             let optionEditar = new Option(categoria.nombre, categoria.id_categoria);
             let optionAsociarC = new Option(categoria.nombre, categoria.id_categoria);
             let optionDesvincularC = new Option(categoria.nombre, categoria.id_categoria);
+            // Categoria para crear la sala de juego
+            let optionSalasC = new Option(categoria.nombre, categoria.id_categoria); 
+            //--------------------------------------
             selectEliminar.add(optionEliminar);
             selectEditar.add(optionEditar);
             selectAsociarC.add(optionAsociarC);
             selectDesvincularC.add(optionDesvincularC);
+            // Categoria para crear la sala de juego
+            selectSalasC.add(optionSalasC);
+            //--------------------------------------
         });
     })
     .catch(error => console.error('Error:', error));
@@ -363,9 +384,41 @@ document.getElementById('Desvincular').addEventListener('click', function() {
     }
 });
 
+//Crear Sala
+document.getElementById('Crear').addEventListener('click', function() {
+    const nombreSala = document.getElementById('nombreSala').value.trim();
+    const idCategoria = document.getElementById('seleccionCategoriaJuego').value;
+
+    if (nombreSala && idCategoria) {
+        const body = 'nombre_sala=' + encodeURIComponent(nombreSala) + '&id_categoria=' + encodeURIComponent(idCategoria);
+        fetch('php/crearSala.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: body
+        })
+        .then(response => response.json())
+        .then(data => {
+            showBootstrapAlert(data.success, data.message);
+            if (data.success) {
+                document.getElementById('nombreSala').value = '';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showBootstrapAlert(false, 'Error al procesar la solicitud');
+        });
+    } else {
+        showBootstrapAlert(false, "Por favor, completa todos los campos para crear la sala.");
+    }
+});
+
+
 //Funcion de inicio de pagina
 
 document.addEventListener('DOMContentLoaded', function() {
     cargarPalabras();
     cargarCategorias();
 });
+
