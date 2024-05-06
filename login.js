@@ -284,6 +284,28 @@ document.getElementById('Editar2').addEventListener('click', function() {
     }
 });
 
+//Asociar Palabra a categoría
+
+document.getElementById('Asociar').addEventListener('click', function() {
+    var id_palabra = document.getElementById('seleccionPalabraCategoria').value;
+    var id_categoria = document.getElementById('seleccionCategoriaPalabra').value;
+
+    if (id_palabra && id_categoria) {
+        fetch('php/Asociar.php', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: 'id_palabra=' + encodeURIComponent(id_palabra) + '&id_categoria=' + encodeURIComponent(id_categoria)
+        })
+        .then(response => response.json())
+        .then(data => {
+            showBootstrapAlert(data.success, data.message);
+        })
+        .catch(error => console.error('Error:', error));
+    } else {
+        showBootstrapAlert(false, "Por favor tanto una categoría como una palabra para asociar.");
+    }
+});
+
 //Funcion de inicio de pagina
 
 document.addEventListener('DOMContentLoaded', function() {
