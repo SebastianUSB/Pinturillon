@@ -205,30 +205,24 @@ document.addEventListener('DOMContentLoaded', function(){
 //Traer categoría
 
 function cargarCategorias() {
-    const selectCategoria = document.getElementById('seleccionCategoria');
-    // Limpiar las opciones existentes (excepto la primera que es el placeholder)
-    while (selectCategoria.options.length > 1) {
-        selectCategoria.remove(1);
-    }
-
-    // Realizar la solicitud al servidor para obtener las categorías
     fetch('php/getCategoria.php')
     .then(response => response.json())
     .then(data => {
+        const selectEliminar = document.getElementById('seleccionCategoria');
+        const selectEditar = document.getElementById('seleccionCategoriaEditar');
+        const selectAsociarC = document.getElementById('seleccionCategoriaPalabra');
+        selectEliminar.innerHTML = '<option value="">Selecciona una categoría para Eliminar</option>';
+        selectEditar.innerHTML = '<option value="">Selecciona una categoría para Editarla</option>';
+
         data.forEach(categoria => {
-            const option = new Option(categoria.nombre, categoria.id_categoria);
-            selectCategoria.add(option);
+            let optionEliminar = new Option(categoria.nombre, categoria.id_categoria);
+            let optionEditar = new Option(categoria.nombre, categoria.id_categoria);
+            selectEliminar.add(optionEliminar);
+            selectEditar.add(optionEditar);
         });
     })
     .catch(error => console.error('Error:', error));
 }
-
-//Funcion de inicio de pagina
-
-document.addEventListener('DOMContentLoaded', function() {
-    cargarPalabras();
-    cargarCategorias();
-});
 
 //Borrar categoría
 
@@ -253,4 +247,39 @@ document.getElementById('Eliminar2').addEventListener('click', function() {
     } else {
         showBootstrapAlert(false, "Por favor, seleccione una palabra para eliminar.");
     }
+});
+
+//Editar categoría
+
+document.getElementById('Editar2').addEventListener('click', function() {
+    const selected = document.getElementById('seleccionCategoriaEditar');
+    const id_categoria = selected.value;
+    const nueva_categoria = document.getElementById('EditarCategoria').value.trim();
+
+    if (id_categoria && nueva_categoria) {
+        fetch('php/editarCategoria.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'id_categoria=' + encodeURIComponent(id_categoria) + '&nueva_categoria=' + encodeURIComponent(nueva_categoria)
+        })
+        .then(response => response.json())
+        .then(data => {
+            showBootstrapAlert(data.success, data.message);
+            if (data.success) {
+                cargarCategorias();
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    } else {
+        showBootstrapAlert(false, "Por favor, seleccione una categoría y escriba un nuevo nombre para actualizar.");
+    }
+});
+
+//Funcion de inicio de pagina
+
+document.addEventListener('DOMContentLoaded', function() {
+    cargarPalabras();
+    cargarCategorias();
 });
