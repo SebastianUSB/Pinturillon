@@ -104,32 +104,6 @@ function showBootstrapAlert(success, message) {
 
 //Traer palabra
 
-document.addEventListener('DOMContentLoaded', function() {
-    fetch('php/getPalabra.php')
-    .then(response => response.json())
-    .then(data => {
-        const select = document.getElementById('seleccionPalabra');
-        data.forEach(palabra => {
-            let option = new Option(palabra.texto, palabra.id_palabra);
-            select.add(option);
-        });
-    })
-    .catch(error => console.error('Error:', error));
-});
-
-document.addEventListener('DOMContentLoaded', function() {
-    fetch('php/getPalabra.php')
-    .then(response => response.json())
-    .then(data => {
-        const select2 = document.getElementById('seleccionPalabraEditar');
-        data.forEach(palabra => {
-            let option = new Option(palabra.texto, palabra.id_palabra);
-            select2.add(option);
-        });
-    })
-    .catch(error => console.error('Error:', error));
-});
-
 function cargarPalabras() {
     fetch('php/getPalabra.php')
     .then(response => response.json())
@@ -221,8 +195,40 @@ document.addEventListener('DOMContentLoaded', function(){
         .then(data => {
             showBootstrapAlert(data.success, data.message);
             if(data.success){
+                cargarCategorias();
             }
         })
         .catch(error => console.error('Error:', error));
     });
 });
+
+//Traer categoria
+
+function cargarCategorias() {
+    const selectCategoria = document.getElementById('seleccionCategoria');
+    // Limpiar las opciones existentes (excepto la primera que es el placeholder)
+    while (selectCategoria.options.length > 1) {
+        selectCategoria.remove(1);
+    }
+
+    // Realizar la solicitud al servidor para obtener las categorías
+    fetch('php/getCategoria.php')
+    .then(response => response.json())
+    .then(data => {
+        data.forEach(categoria => {
+            const option = new Option(categoria.nombre, categoria.id_categoria);
+            selectCategoria.add(option);
+        });
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+//Funcion de inicio de pagina
+
+document.addEventListener('DOMContentLoaded', function() {
+    cargarPalabras();
+    cargarCategorias();
+});
+
+
+
