@@ -75,6 +75,15 @@ document.getElementById('sala1').addEventListener('click', function() {
     }
 });
 
+document.getElementById('sala2').addEventListener('click', function() {
+    var container = document.getElementById('containers2');
+    if (container.style.display === 'block') {
+        container.style.display = 'none'; // Si está visible, ocultarlo
+    } else {
+        container.style.display = 'block'; // Si está oculto, mostrarlo
+    }
+});
+
 //Agregar palabra
 
 document.addEventListener('DOMContentLoaded', function(){
@@ -414,11 +423,56 @@ document.getElementById('Crear').addEventListener('click', function() {
     }
 });
 
+// Cargar Salas
+function cargarSalas() {
+    fetch('php/getSala.php')
+    .then(response => response.json())
+    .then(data => {
+        const selectSala = document.getElementById('seleccionSala');
+        selectSala.innerHTML = '<option value="">Selecciona una Sala de juego</option>'; 
+        data.forEach(sala => {
+            let option = new Option(sala.nombre, sala.id_sala);
+            selectSala.add(option);
+        });
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+//Eliminar Sala
+document.getElementById('Eliminar3').addEventListener('click', function() {
+    const selectSala = document.getElementById('seleccionSala');
+    const idSala = selectSala.value;
+
+    if (idSala) {
+        fetch('php/eliminarSala.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'id_sala=' + encodeURIComponent(idSala)
+        })
+        .then(response => response.json())
+        .then(data => {
+            showBootstrapAlert(data.success, data.message);
+            if (data.success) {
+                cargarSalas();
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showBootstrapAlert(false, 'Error al procesar la solicitud');
+        });
+    } else {
+        showBootstrapAlert(false, "Por favor, seleccione una sala para eliminar.");
+    }
+});
+
 
 //Funcion de inicio de pagina
 
 document.addEventListener('DOMContentLoaded', function() {
     cargarPalabras();
     cargarCategorias();
+    cargarSalas();
 });
 
