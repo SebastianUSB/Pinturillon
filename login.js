@@ -181,7 +181,7 @@ document.getElementById('Editar').addEventListener('click', function() {
     }
 });
 
-//Agregar categoria
+//Agregar categoría
 
 document.addEventListener('DOMContentLoaded', function(){
     document.getElementById('Enviar2').addEventListener('click', function(event){
@@ -202,7 +202,7 @@ document.addEventListener('DOMContentLoaded', function(){
     });
 });
 
-//Traer categoria
+//Traer categoría
 
 function cargarCategorias() {
     const selectCategoria = document.getElementById('seleccionCategoria');
@@ -230,5 +230,27 @@ document.addEventListener('DOMContentLoaded', function() {
     cargarCategorias();
 });
 
+//Borrar categoría
 
+document.getElementById('Eliminar2').addEventListener('click', function() {
+    const selectedCategoria = document.getElementById('seleccionCategoria');
+    const id_categoria = selectedCategoria.value;
 
+    if (id_categoria) {
+        fetch('php/borrarCategoria.php', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: 'id_categoria=' + encodeURIComponent(id_categoria)
+        })
+        .then(response => response.json())
+        .then(data => {
+            showBootstrapAlert(data.success, data.message);
+            if (data.success) {
+                cargarCategorias();
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    } else {
+        showBootstrapAlert(false, "Por favor, seleccione una palabra para eliminar.");
+    }
+});
