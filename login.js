@@ -207,3 +207,22 @@ document.getElementById('Editar').addEventListener('click', function() {
     }
 });
 
+//Agregar categoria
+
+document.addEventListener('DOMContentLoaded', function(){
+    document.getElementById('Enviar2').addEventListener('click', function(event){
+        var form = document.getElementById('nuevaCategoriaForm');
+        var formData = new FormData(form);
+        fetch('php/agregarCategoria.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            showBootstrapAlert(data.success, data.message);
+            if(data.success){
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    });
+});
