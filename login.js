@@ -111,17 +111,22 @@ function cargarPalabras() {
         const select = document.getElementById('seleccionPalabra');
         const selectEditar = document.getElementById('seleccionPalabraEditar');
         const selectAsociarP = document.getElementById('seleccionPalabraCategoria');
+        const selectDesvincularP = document.getElementById('seleccionPalabraDesvincular');
         select.innerHTML = '<option value="">Selecciona una palabra para Eliminar</option>';
         selectEditar.innerHTML = '<option value="">Selecciona una palabra para Editarla</option>';
         selectAsociarP.innerHTML= '<option value="">Selecciona una palabra para Asociar</option>';
+        selectDesvincularP.innerHTML= '<option value="">Selecciona una palabra para Desvincular</option>';
 
         data.forEach(palabra => {
             let option = new Option(palabra.texto, palabra.id_palabra);
             let optionEditar = new Option(palabra.texto, palabra.id_palabra);
             let optionAsociarP = new Option(palabra.texto, palabra.id_palabra);
+            let optionDesvincularP = new Option(palabra.texto, palabra.id_palabra);
             select.add(option);
             selectEditar.add(optionEditar);
             selectAsociarP.add(optionAsociarP);
+            selectDesvincularP.add(optionDesvincularP);
+            
         });
     })
     .catch(error => console.error('Error:', error));
@@ -215,17 +220,21 @@ function cargarCategorias() {
         const selectEliminar = document.getElementById('seleccionCategoria');
         const selectEditar = document.getElementById('seleccionCategoriaEditar');
         const selectAsociarC = document.getElementById('seleccionCategoriaPalabra');
+        const selectDesvincularC = document.getElementById('seleccionCategoriaDesvincular');
         selectEliminar.innerHTML = '<option value="">Selecciona una categoría para Eliminar</option>';
         selectEditar.innerHTML = '<option value="">Selecciona una categoría para Editarla</option>';
         selectAsociarC.innerHTML = '<option value="">Selecciona una categoría para Asociar</option>';
+        selectDesvincularC.innerHTML = '<option value="">Selecciona una categoría para Desvincular</option>';
 
         data.forEach(categoria => {
             let optionEliminar = new Option(categoria.nombre, categoria.id_categoria);
             let optionEditar = new Option(categoria.nombre, categoria.id_categoria);
             let optionAsociarC = new Option(categoria.nombre, categoria.id_categoria);
+            let optionDesvincularC = new Option(categoria.nombre, categoria.id_categoria);
             selectEliminar.add(optionEliminar);
             selectEditar.add(optionEditar);
             selectAsociarC.add(optionAsociarC);
+            selectDesvincularC.add(optionDesvincularC);
         });
     })
     .catch(error => console.error('Error:', error));
@@ -303,6 +312,54 @@ document.getElementById('Asociar').addEventListener('click', function() {
         .catch(error => console.error('Error:', error));
     } else {
         showBootstrapAlert(false, "Por favor tanto una categoría como una palabra para asociar.");
+    }
+});
+
+//Filtrado
+
+document.getElementById('seleccionPalabraDesvincular').addEventListener('change', function() {
+    var id_palabra = this.value;
+    var selectCategoria = document.getElementById('seleccionCategoriaDesvincular');
+    selectCategoria.innerHTML = '<option value="">Selecciona una categoría para Desvincular</option>';
+
+    if (id_palabra) {
+        fetch('php/getCategoriasPorPalabra.php', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: 'id_palabra=' + encodeURIComponent(id_palabra)
+        })
+        .then(response => response.json())
+        .then(data => {
+            data.forEach(categoria => {
+                let option = new Option(categoria.nombre, categoria.id_categoria);
+                selectCategoria.add(option);
+            });
+        })
+        .catch(error => console.error('Error:', error));
+    }
+});
+
+//Desvincular Palabra por categoría
+
+document.getElementById('Desvincular').addEventListener('click', function() {
+    const id_palabra = document.getElementById('seleccionPalabraDesvincular').value;
+    const id_categoria = document.getElementById('seleccionCategoriaDesvincular').value;
+
+    if (id_palabra && id_categoria) {
+        fetch('php/desvincular.php', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: 'id_palabra=' + encodeURIComponent(id_palabra) + '&id_categoria=' + encodeURIComponent(id_categoria)
+        })
+        .then(response => response.json())
+        .then(data => {
+            showBootstrapAlert(data.success, data.message); 
+            if (data.success) {
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    } else {
+        showBootstrapAlert(false, "Por favor, selecciona una palabra y una categoría para desvincular.");
     }
 });
 
