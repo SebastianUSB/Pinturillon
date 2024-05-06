@@ -183,34 +183,42 @@
  
          <!-- Rooms Available Modal -->
          <div class="modal fade" id="roomsModal" tabindex="-1" aria-labelledby="roomsModalLabel" aria-hidden="true">
-             <div class="modal-dialog modal-lg">
-                 <div class="modal-content">
-                     <div class="modal-header">
-                         <h5 class="modal-title" id="roomsModalLabel">Salas Disponibles</h5>
-                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                     </div>
-                     <div class="modal-body">
-                         <table class="table">
-                             <thead>
-                                 <tr>
-                                     <th>Número de Sala</th>
-                                     <th>Creador</th>
-                                     <th>Personas en la Sala</th>
-                                     <th></th>
-                                 </tr>
-                             </thead>
-                             <tbody>
-                                 <tr>
-                                     <td>1</td>
-                                     <td>Jugador1</td>
-                                     <td>3/8</td>
-                                     <td><button class="btn btn-sm btn-success">Unirse</button></td>
-                                 </tr>
-                             </tbody>
-                         </table>
-                     </div>
-                 </div>
-             </div>
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="roomsModalLabel">Salas Disponibles</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="filters">
+                            <select class="form-select mt-2" id="filtroCategoria">
+                                <option value="">Filtrar por categoría</option>
+                            </select>
+                            <select class="form-select mt-2" id="filtroEstado">
+                                <option value="">Filtrar por estado</option>
+                                <option value="activo">Activo</option>
+                                <option value="enJuego">En Juego</option>
+                            </select>
+                        </div>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Número de Sala</th>
+                                    <th>Nombre de la sala</th>
+                                    <th>Categoria</th>
+                                    <th>Estado</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaSalas">
+                                <!-- Las salas se cargarán dinámicamente aquí -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
          </div>
 
          <!-- Avatar Selection Modal -->

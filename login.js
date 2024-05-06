@@ -244,11 +244,15 @@ function cargarCategorias() {
         // Categoria para crear la sala de juego
         const selectSalasC = document.getElementById('seleccionCategoriaJuego')
         //--------------------------------------
+        // Categoria para filtro en ver las salas de juego
+        const selectCategoriaS = document.getElementById('filtroCategoria')
+        //--------------------------------------
         selectEliminar.innerHTML = '<option value="">Selecciona una categoría para Eliminar</option>';
         selectEditar.innerHTML = '<option value="">Selecciona una categoría para Editarla</option>';
         selectAsociarC.innerHTML = '<option value="">Selecciona una categoría para Asociar</option>';
         selectDesvincularC.innerHTML = '<option value="">Selecciona una categoría para Desvincular</option>';
         selectSalasC.innerHTML = '<option value="">Selecciona una categoría para tu sala de juego</option>';
+        selectCategoriaS.innerHTML = '<option value="">Filtrar por categoría</option>';
 
         data.forEach(categoria => {
             let optionEliminar = new Option(categoria.nombre, categoria.id_categoria);
@@ -258,12 +262,18 @@ function cargarCategorias() {
             // Categoria para crear la sala de juego
             let optionSalasC = new Option(categoria.nombre, categoria.id_categoria); 
             //--------------------------------------
+            // Categoria para filtro en ver las salas de juego
+            let optionCategoriaS = new Option(categoria.nombre, categoria.id_categoria); 
+            //--------------------------------------
             selectEliminar.add(optionEliminar);
             selectEditar.add(optionEditar);
             selectAsociarC.add(optionAsociarC);
             selectDesvincularC.add(optionDesvincularC);
             // Categoria para crear la sala de juego
             selectSalasC.add(optionSalasC);
+            //--------------------------------------
+            // Categoria para filtro en ver las salas de juego
+            selectCategoriaS.add(optionCategoriaS);
             //--------------------------------------
         });
     })
@@ -438,6 +448,40 @@ function cargarSalas() {
     .catch(error => console.error('Error:', error));
 }
 
+// Función para cargar salas con filtros opcionales
+function cargarVerSalas(filtroCategoria = '', filtroEstado = '') {
+    fetch('php/getSalas.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `filtroCategoria=${filtroCategoria}&filtroEstado=${filtroEstado}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        const tbody = document.getElementById('tablaSalas');
+        tbody.innerHTML = '';  // Limpiar tabla actual
+        data.forEach(sala => {
+            const row = `<tr>
+                <td>${sala.id_sala}</td>
+                <td>${sala.nombre}</td>
+                <td>${sala.categoria}</td>
+                <td>${sala.estado}</td>
+                <td><button class="btn btn-sm btn-success">Unirse</button></td>
+            </tr>`;
+            tbody.innerHTML += row;
+        });
+    });
+}
+
+// Evento para filtrar salas basado en selecciones
+document.getElementById('filtroCategoria').addEventListener('change', function() {
+    cargarVerSalas(this.value, document.getElementById('filtroEstado').value);
+});
+document.getElementById('filtroEstado').addEventListener('change', function() {
+    cargarVerSalas(document.getElementById('filtroCategoria').value, this.value);
+});
+
 //Eliminar Sala
 document.getElementById('Eliminar3').addEventListener('click', function() {
     const selectSala = document.getElementById('seleccionSala');
@@ -474,5 +518,6 @@ document.addEventListener('DOMContentLoaded', function() {
     cargarPalabras();
     cargarCategorias();
     cargarSalas();
+    cargarVerSalas();
 });
 
