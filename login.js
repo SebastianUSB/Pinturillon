@@ -110,14 +110,18 @@ function cargarPalabras() {
     .then(data => {
         const select = document.getElementById('seleccionPalabra');
         const selectEditar = document.getElementById('seleccionPalabraEditar');
+        const selectAsociarP = document.getElementById('seleccionPalabraCategoria');
         select.innerHTML = '<option value="">Selecciona una palabra para Eliminar</option>';
         selectEditar.innerHTML = '<option value="">Selecciona una palabra para Editarla</option>';
+        selectAsociarP.innerHTML= '<option value="">Selecciona una palabra para Asociar</option>';
 
         data.forEach(palabra => {
             let option = new Option(palabra.texto, palabra.id_palabra);
             let optionEditar = new Option(palabra.texto, palabra.id_palabra);
+            let optionAsociarP = new Option(palabra.texto, palabra.id_palabra);
             select.add(option);
             selectEditar.add(optionEditar);
+            selectAsociarP.add(optionAsociarP);
         });
     })
     .catch(error => console.error('Error:', error));
@@ -213,12 +217,15 @@ function cargarCategorias() {
         const selectAsociarC = document.getElementById('seleccionCategoriaPalabra');
         selectEliminar.innerHTML = '<option value="">Selecciona una categoría para Eliminar</option>';
         selectEditar.innerHTML = '<option value="">Selecciona una categoría para Editarla</option>';
+        selectAsociarC.innerHTML = '<option value="">Selecciona una categoría para Asociar</option>';
 
         data.forEach(categoria => {
             let optionEliminar = new Option(categoria.nombre, categoria.id_categoria);
             let optionEditar = new Option(categoria.nombre, categoria.id_categoria);
+            let optionAsociarC = new Option(categoria.nombre, categoria.id_categoria);
             selectEliminar.add(optionEliminar);
             selectEditar.add(optionEditar);
+            selectAsociarC.add(optionAsociarC);
         });
     })
     .catch(error => console.error('Error:', error));
