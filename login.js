@@ -422,6 +422,8 @@ document.getElementById('Crear').addEventListener('click', function() {
             showBootstrapAlert(data.success, data.message);
             if (data.success) {
                 document.getElementById('nombreSala').value = '';
+                cargarSalas();
+                cargarVerSalas();
             }
         })
         .catch(error => {
@@ -500,6 +502,7 @@ document.getElementById('Eliminar3').addEventListener('click', function() {
             showBootstrapAlert(data.success, data.message);
             if (data.success) {
                 cargarSalas();
+                cargarVerSalas();
             }
         })
         .catch(error => {
