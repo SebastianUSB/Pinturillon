@@ -7,5 +7,4 @@
     if($conn->connect_error){
         die("Error connecting to Pinturillon: " . $conn->connect_error);
     }
-    //echo "Successfully connected to Pinturillon";
 ?>
