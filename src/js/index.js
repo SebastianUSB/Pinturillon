@@ -20,16 +20,6 @@ let closeScore = document.querySelector(".close-score");
 let scoreList = document.getElementById("scoreList");
 let timerElement = document.getElementById("timer");
 let timeLeft = 60; 
-let randomWordElement = document.getElementById("randomWord");
-let words = ["ÁRBOL", "SOL", "CASA", "PERRO", "GATO", "CARRO", "FLOR", "LIBRO", "TELÉFONO", "COMPUTADORA"]; // Lista de palabras
-
-function showRandomWord() {
-    let randomIndex = Math.floor(Math.random() * words.length);
-    let randomWord = words[randomIndex];
-    randomWordElement.textContent = randomWord;
-}
-
-showRandomWord();
 
 function updateTimer() {
     timerElement.textContent = timeLeft;
@@ -124,7 +114,7 @@ function startPosition(e) {
 
 function finishedPosition() {
   painting = false;
-  ctx.beginPath(); // Begin a new path
+  ctx.beginPath();
 }
 
 function draw(e) {
@@ -136,7 +126,7 @@ function draw(e) {
 
   ctx.lineTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
   ctx.stroke();
-  ctx.beginPath(); // Begin a new path
+  ctx.beginPath();
   ctx.moveTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
 }
 
@@ -144,7 +134,7 @@ canvas.addEventListener('mousedown', startPosition);
 canvas.addEventListener('mouseup', finishedPosition);
 canvas.addEventListener('mousemove', draw);
 
-// Adjust the canvas size when the window is resized
+// Funcion de ajuste de ventana
 window.addEventListener('resize', resizeCanvas);
 
 function resizeCanvas() {
@@ -152,8 +142,15 @@ function resizeCanvas() {
   canvas.height = window.innerHeight - document.querySelector('.navbar-custom').offsetHeight;
 }
 
-// Initial resize
+// Llamado de funcion que ajusta la ventana
+
 resizeCanvas();
+
+// Cargar palabras cuando la página se cargue
+
+document.addEventListener('DOMContentLoaded', function() {
+
+});
 
 
   
