@@ -1,11 +1,12 @@
 const express = require('express');
 const app = express();
 const pool = require('./db');
+const palabrasRoutes = require('./routes/palabras');
 
 app.use(express.json());
 
 app.use(express.static('public'));
-
+app.use('/palabras', palabrasRoutes);
 
 pool.query('SELECT NOW()', (err, res) => {
     if (err) {
