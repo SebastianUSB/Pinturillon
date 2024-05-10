@@ -176,6 +176,33 @@ function cargarCategorias() {
         });
 }
 
+document.addEventListener('DOMContentLoaded', function () {
+    const seleccionPalabraDesvincular = document.getElementById('seleccionPalabraDesvincular');
+    const seleccionCategoriaDesvincular = document.getElementById('seleccionCategoriaDesvincular');
+
+    seleccionPalabraDesvincular.addEventListener('change', function() {
+        const id_palabra = this.value;
+        if (!id_palabra) {
+            seleccionCategoriaDesvincular.innerHTML = '<option value="">Selecciona una categoria para Desvincular</option>';
+            return;
+        }
+
+        fetch(`http://localhost:3000/getCategoriasPorPalabra/${id_palabra}`)
+            .then(response => response.json())
+            .then(data => {
+                seleccionCategoriaDesvincular.innerHTML = '<option value="">Selecciona una categoria para Desvincular</option>';
+                data.forEach(categoria => {
+                    const opcion = new Option(categoria.nombre, categoria.id_categoria);
+                    seleccionCategoriaDesvincular.appendChild(opcion);
+                });
+            })
+            .catch(error => {
+                console.error('Error al cargar las categorías:', error);
+                showBootstrapAlert(false, 'Error al cargar las categorías.');
+            });
+    });
+});
+
 
 
 
@@ -374,6 +401,7 @@ function actualizarPalabra(id, texto) {
     .then(response => {
         if (!response.ok) {
             throw new Error('No se pudo actualizar la palabra');
+            
         }
         return response.json();
     })
@@ -383,6 +411,7 @@ function actualizarPalabra(id, texto) {
     })
     .catch(error => {
         console.error('Error al actualizar la palabra:', error);
+        console.log(error.message);
         showBootstrapAlert(false, error.message || 'Error al actualizar la palabra.');
     });
 }
@@ -464,19 +493,72 @@ function asociarPalabraCategoria(id_palabra, id_categoria) {
     })
     .then(response => {
         if (!response.ok) {
-            throw new Error('No se pudo realizar la asociación');
+            return response.json().then(data => {
+                throw new Error(data.mensaje || 'Error desconocido');
+            });
         }
         return response.json();
     })
     .then(data => {
-        showBootstrapAlert(true, data.mensaje);
-        // Opcional: recargar datos o actualizar la interfaz de usuario según sea necesario
+        if (data.mensaje.includes('ya está asociada')) {
+            showBootstrapAlert(false, data.mensaje);
+        } else {
+            showBootstrapAlert(true, data.mensaje);
+        }
     })
     .catch(error => {
         console.error('Error al asociar la palabra con la categoría:', error);
         showBootstrapAlert(false, error.message || 'Error al realizar la asociación.');
     });
 }
+
+
+
+//Desvincular Palabra Categoria
+document.addEventListener('DOMContentLoaded', function () {
+    const botonDesvincular = document.getElementById('Desvincular');
+    const seleccionPalabraDesvincular = document.getElementById('seleccionPalabraDesvincular');
+    const seleccionCategoriaDesvincular = document.getElementById('seleccionCategoriaDesvincular');
+
+    botonDesvincular.addEventListener('click', function() {
+        const id_palabra = seleccionPalabraDesvincular.value;
+        const id_categoria = seleccionCategoriaDesvincular.value;
+
+        if (!id_palabra || !id_categoria) {
+            showBootstrapAlert(false, 'Por favor, selecciona tanto una palabra como una categoría antes de intentar desvincular.');
+            return;
+        }
+
+        desvincularPalabraCategoria(id_palabra, id_categoria);
+    });
+});
+
+function desvincularPalabraCategoria(id_palabra, id_categoria) {
+    fetch('http://localhost:3000/desvincularPalabraCategoria', {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ id_palabra: id_palabra, id_categoria: id_categoria })
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(err => {
+                throw new Error(err.mensaje || 'No se pudo desvincular la asociación');
+            });
+        }
+        return response.json();
+    })
+    .then(data => {
+        showBootstrapAlert(true, data.mensaje);
+        // Opcional: Actualizar los selects o la interfaz de usuario aquí
+    })
+    .catch(error => {
+        console.error('Error al desvincular la palabra de la categoría:', error);
+        showBootstrapAlert(false, error.message || 'Error al desvincular la palabra de la categoría.');
+    });
+}
+
 
 
 //Funcion de inicio de pagina

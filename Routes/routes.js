@@ -211,4 +211,47 @@ router.post('/asociarPalabraCategoria', async (req, res) => {
     }
 });
 
+// Ruta para desvincular una palabra de una categoría
+router.delete('/desvincularPalabraCategoria', async (req, res) => {
+    const { id_palabra, id_categoria } = req.body; // Asumimos que los IDs se envían en el cuerpo de la solicitud
+
+    if (!id_palabra || !id_categoria) {
+        return res.status(400).json({ mensaje: "Se requieren el ID de la palabra y el ID de la categoría para desvincular" });
+    }
+
+    try {
+        // Eliminar la asociación específica
+        const deleteQuery = 'DELETE FROM palabras_por_categoria WHERE id_palabra = $1 AND id_categoria = $2';
+        const response = await pool.query(deleteQuery, [id_palabra, id_categoria]);
+
+        if (response.rowCount === 0) {
+            return res.status(404).json({ mensaje: "No se encontró la asociación especificada para eliminar" });
+        }
+
+        res.json({ mensaje: "Asociación eliminada correctamente" });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send("Error del servidor al desvincular la palabra de la categoría");
+    }
+});
+
+// Ruta para obtener las categorías asociadas a una palabra específica
+router.get('/getCategoriasPorPalabra/:id_palabra', async (req, res) => {
+    const { id_palabra } = req.params;
+    try {
+        const query = `
+            SELECT c.id_categoria, c.nombre
+            FROM categoria c
+            JOIN palabras_por_categoria pc ON c.id_categoria = pc.id_categoria
+            WHERE pc.id_palabra = $1
+        `;
+        const resultado = await pool.query(query, [id_palabra]);
+        res.json(resultado.rows);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send("Error del servidor al obtener las categorías para la palabra especificada");
+    }
+});
+
+
 module.exports = router;
