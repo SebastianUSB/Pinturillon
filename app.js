@@ -1,12 +1,12 @@
 const express = require('express');
 const app = express();
 const pool = require('./db');
-const palabrasRoutes = require('./routes/palabras');
+const Routes = require('./Routes/routes');
 
 app.use(express.json());
 
 app.use(express.static('public'));
-app.use('/palabras', palabrasRoutes);
+app.use('/', Routes);
 
 pool.query('SELECT NOW()', (err, res) => {
     if (err) {

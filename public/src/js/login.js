@@ -102,6 +102,94 @@ function showBootstrapAlert(success, message) {
     }, 5000); // 5000 ms = 5 segundos
 }
 
+//Get Palabras
+document.addEventListener('DOMContentLoaded', function() {
+    // Obtener todos los elementos select relacionados con palabras
+    const seleccionPalabraEliminar = document.getElementById('seleccionPalabra');
+    const seleccionPalabraEditar = document.getElementById('seleccionPalabraEditar');
+    const seleccionPalabraCategoria = document.getElementById('seleccionPalabraCategoria');
+    const seleccionPalabraDesvincular = document.getElementById('seleccionPalabraDesvincular');
+
+    // Función para cargar las palabras en los select
+    function cargarPalabras() {
+        fetch('http://localhost:3000/getPalabras') // Asegúrate de que la URL es correcta
+            .then(response => response.json())
+            .then(data => {
+                // Ordenar alfabéticamente por el texto de la palabra
+                data.sort((a, b) => a.texto.localeCompare(b.texto));
+                
+                data.forEach(palabra => {
+                    // Crear una opción para cada select
+                    const opcionEliminar = new Option(palabra.texto, palabra.id_palabra);
+                    const opcionEditar = new Option(palabra.texto, palabra.id_palabra);
+                    const opcionCategoria = new Option(palabra.texto, palabra.id_palabra);
+                    const opcionDesvincular = new Option(palabra.texto, palabra.id_palabra);
+
+                    // Añadir la opción en cada select
+                    seleccionPalabraEliminar.appendChild(opcionEliminar);
+                    seleccionPalabraEditar.appendChild(opcionEditar);
+                    seleccionPalabraCategoria.appendChild(opcionCategoria);
+                    seleccionPalabraDesvincular.appendChild(opcionDesvincular);
+                });
+            })
+            .catch(error => {
+                console.error('Error al cargar las palabras:', error);
+            });
+    }
+
+    // Llamar a la función al cargar la página
+    cargarPalabras();
+});
+
+
+
+
+//Post Palabras
+document.addEventListener('DOMContentLoaded', function () {
+    const enviarBtn = document.getElementById('Enviar1');
+    if (enviarBtn) {
+        enviarBtn.addEventListener('click', function() {
+            const palabraInput = document.getElementById('agregarPalabra');
+            const palabra = palabraInput.value.trim();
+
+            if (palabra) {
+                fetch('http://localhost:3000/postPalabras', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ texto: palabra })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        // Si el servidor responde con un código de error, manejar aquí
+                        return response.json().then(err => {
+                            throw new Error(err.mensaje || 'Error desconocido');
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.mensaje) {
+                        showBootstrapAlert(true, data.mensaje);
+                    }
+                    palabraInput.value = ''; // Limpiar el input después de enviar
+                })
+                .catch(error => {
+                    console.error('Error al agregar la palabra:', error);
+                    showBootstrapAlert(false, error.message); // Mostrar el mensaje de error del servidor
+                });
+            } else {
+                showBootstrapAlert(false, 'Por favor, escribe una palabra antes de enviar.');
+            }
+        });
+    }
+});
+
+
+
+
+
 //Funcion de inicio de pagina
 
 document.addEventListener('DOMContentLoaded', function() {
