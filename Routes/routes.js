@@ -179,5 +179,36 @@ router.put('/updateCategoria/:id', async (req, res) => {
     }
 });
 
+// Ruta para asociar una palabra con una categoría
+router.post('/asociarPalabraCategoria', async (req, res) => {
+    const { id_palabra, id_categoria } = req.body;
+
+    if (!id_palabra || !id_categoria) {
+        return res.status(400).json({ mensaje: "Se requieren tanto el id de la palabra como el id de la categoría" });
+    }
+
+    try {
+        // Verificar si la asociación ya existe
+        const existente = await pool.query(
+            'SELECT * FROM palabras_por_categoria WHERE id_palabra = $1 AND id_categoria = $2',
+            [id_palabra, id_categoria]
+        );
+
+        if (existente.rows.length > 0) {
+            return res.status(400).json({ mensaje: 'Esta palabra ya está asociada a esta categoría' });
+        }
+
+        // Crear la nueva asociación
+        const nuevaAsociacion = await pool.query(
+            'INSERT INTO palabras_por_categoria (id_palabra, id_categoria) VALUES ($1, $2) RETURNING *',
+            [id_palabra, id_categoria]
+        );
+
+        res.json({ asociacion: nuevaAsociacion.rows[0], mensaje: "Asociación creada correctamente" });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send("Error del servidor al crear la asociación");
+    }
+});
 
 module.exports = router;

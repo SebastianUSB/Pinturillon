@@ -435,6 +435,49 @@ function actualizarCategoria(id, nombre) {
     });
 }
 
+//Asociar Palabra a una categoria
+document.addEventListener('DOMContentLoaded', function () {
+    const botonAsociar = document.getElementById('Asociar');
+    const seleccionPalabra = document.getElementById('seleccionPalabraCategoria');
+    const seleccionCategoria = document.getElementById('seleccionCategoriaPalabra');
+
+    botonAsociar.addEventListener('click', function() {
+        const id_palabra = seleccionPalabra.value;
+        const id_categoria = seleccionCategoria.value;
+
+        if (!id_palabra || !id_categoria) {
+            showBootstrapAlert(false, 'Por favor, selecciona tanto una palabra como una categoría antes de intentar asociar.');
+            return;
+        }
+
+        asociarPalabraCategoria(id_palabra, id_categoria);
+    });
+});
+
+function asociarPalabraCategoria(id_palabra, id_categoria) {
+    fetch('http://localhost:3000/asociarPalabraCategoria', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ id_palabra: id_palabra, id_categoria: id_categoria })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('No se pudo realizar la asociación');
+        }
+        return response.json();
+    })
+    .then(data => {
+        showBootstrapAlert(true, data.mensaje);
+        // Opcional: recargar datos o actualizar la interfaz de usuario según sea necesario
+    })
+    .catch(error => {
+        console.error('Error al asociar la palabra con la categoría:', error);
+        showBootstrapAlert(false, error.message || 'Error al realizar la asociación.');
+    });
+}
+
 
 //Funcion de inicio de pagina
 
