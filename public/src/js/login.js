@@ -139,6 +139,42 @@ function cargarPalabras() {
         });
 }
 
+//GET Categorías
+function cargarCategorias() {
+    const selects = [
+        document.getElementById('seleccionCategoria'),
+        document.getElementById('seleccionCategoriaEditar'),
+        document.getElementById('seleccionCategoriaPalabra'),
+        document.getElementById('seleccionCategoriaDesvincular')
+    ];
+
+    // Limpiar los selects existentes
+    selects.forEach(select => {
+        while (select.firstChild) {
+            select.removeChild(select.firstChild);
+        }
+        const defaultOption = document.createElement('option');
+        defaultOption.textContent = select.id === 'seleccionCategoria' ? "Selecciona una categoria para Eliminar" :
+                                    select.id === 'seleccionCategoriaEditar' ? "Selecciona una categoria para Editarla" :
+                                    select.id === 'seleccionCategoriaPalabra' ? "Selecciona una categoria para Asociar" :
+                                    "Selecciona una categoria para Desvincular";
+        select.appendChild(defaultOption);
+    });
+
+    // Cargar categorías desde el servidor
+    fetch('http://localhost:3000/getCategorias')
+        .then(response => response.json())
+        .then(data => {
+            data.sort((a, b) => a.nombre.localeCompare(b.nombre));
+            data.forEach(categoria => {
+                const opcion = new Option(categoria.nombre, categoria.id_categoria);
+                selects.forEach(select => select.appendChild(opcion.cloneNode(true)));
+            });
+        })
+        .catch(error => {
+            console.error('Error al cargar las categorías:', error);
+        });
+}
 
 
 
@@ -185,9 +221,50 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
+//POST Categorias
+document.addEventListener('DOMContentLoaded', function () {
+    const enviarBtnCategoria = document.getElementById('Enviar2');
+    const categoriaInput = document.getElementById('agregarCategoria');
+
+    enviarBtnCategoria.addEventListener('click', function() {
+        const categoria = categoriaInput.value.trim();
+
+        if (categoria) {
+            fetch('http://localhost:3000/postCategorias', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ nombre: categoria })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => {
+                        throw new Error(err.mensaje || 'Error desconocido');
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.mensaje) {
+                    showBootstrapAlert(true, data.mensaje);
+                    cargarCategorias();  // Asumiendo que tienes una función similar para recargar las categorías
+                }
+                categoriaInput.value = ''; // Limpiar el input después de enviar
+            })
+            .catch(error => {
+                console.error('Error al agregar la categoría:', error);
+                showBootstrapAlert(false, error.message); // Mostrar el mensaje de error del servidor
+            });
+        } else {
+            showBootstrapAlert(false, 'Por favor, escribe una categoría antes de enviar.');
+        }
+    });
+});
+
+
 
 //DELETE Palabra
-
 document.addEventListener('DOMContentLoaded', function () {
     const botonEliminar = document.getElementById('Eliminar');
     const seleccionPalabra = document.getElementById('seleccionPalabra');
@@ -223,6 +300,44 @@ function eliminarPalabra(id) {
         showBootstrapAlert(false, error.message || 'Error al eliminar la palabra.');
     });
 }
+
+//DELETE categoria
+document.addEventListener('DOMContentLoaded', function () {
+    const botonEliminarCategoria = document.getElementById('Eliminar2');
+    const seleccionCategoria = document.getElementById('seleccionCategoria');
+
+    botonEliminarCategoria.addEventListener('click', function() {
+        const id = seleccionCategoria.value;
+
+        if (!id) {
+            showBootstrapAlert(false, 'Por favor, selecciona una categoría antes de intentar eliminar.');
+            return;
+        }
+
+        eliminarCategoria(id);
+    });
+});
+
+function eliminarCategoria(id) {
+    fetch(`http://localhost:3000/deleteCategoria/${id}`, {
+        method: 'DELETE'
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('No se pudo eliminar la categoría');
+        }
+        return response.json();
+    })
+    .then(data => {
+        showBootstrapAlert(true, data.mensaje);
+        cargarCategorias();  // Asumiendo que tienes una función similar para recargar las categorías
+    })
+    .catch(error => {
+        console.error('Error al eliminar la categoría:', error);
+        showBootstrapAlert(false, error.message || 'Error al eliminar la categoría.');
+    });
+}
+
 
 //PUT palabra
 document.addEventListener('DOMContentLoaded', function () {
@@ -272,10 +387,59 @@ function actualizarPalabra(id, texto) {
     });
 }
 
+//PUT Categoria
+document.addEventListener('DOMContentLoaded', function () {
+    const botonEditarCategoria = document.getElementById('Editar2');
+    const seleccionCategoriaEditar = document.getElementById('seleccionCategoriaEditar');
+    const inputEditarCategoria = document.getElementById('EditarCategoria');
+
+    botonEditarCategoria.addEventListener('click', function() {
+        const id = seleccionCategoriaEditar.value;
+        const nuevoNombre = inputEditarCategoria.value.trim();
+
+        if (!id) {
+            showBootstrapAlert(false, 'Por favor, selecciona una categoría antes de intentar editar.');
+            return;
+        }
+
+        if (!nuevoNombre) {
+            showBootstrapAlert(false, 'Por favor, escribe el nuevo nombre para la categoría.');
+            return;
+        }
+
+        actualizarCategoria(id, nuevoNombre);
+    });
+});
+
+function actualizarCategoria(id, nombre) {
+    fetch(`http://localhost:3000/updateCategoria/${id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ nombre: nombre })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('No se pudo actualizar la categoría');
+        }
+        return response.json();
+    })
+    .then(data => {
+        showBootstrapAlert(true, data.mensaje);
+        cargarCategorias();  // Asegúrate de tener esta función para recargar la lista de categorías
+    })
+    .catch(error => {
+        console.error('Error al actualizar la categoría:', error);
+        showBootstrapAlert(false, error.message || 'Error al actualizar la categoría.');
+    });
+}
+
 
 //Funcion de inicio de pagina
 
 document.addEventListener('DOMContentLoaded', function() {
     cargarPalabras();
+    cargarCategorias();
 });
 
