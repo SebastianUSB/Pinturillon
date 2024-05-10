@@ -102,7 +102,7 @@ function showBootstrapAlert(success, message) {
     }, 5000); // 5000 ms = 5 segundos
 }
 
-//Get Palabras
+//GET Palabras
 function cargarPalabras() {
     const selects = [
         document.getElementById('seleccionPalabra'),
@@ -143,7 +143,7 @@ function cargarPalabras() {
 
 
 
-//Post Palabras
+//POST Palabras
 document.addEventListener('DOMContentLoaded', function () {
     const enviarBtn = document.getElementById('Enviar1');
     if (enviarBtn) {
@@ -161,7 +161,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 })
                 .then(response => {
                     if (!response.ok) {
-                        // Si el servidor responde con un código de error, manejar aquí
                         return response.json().then(err => {
                             throw new Error(err.mensaje || 'Error desconocido');
                         });
@@ -187,6 +186,43 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 
+//DELETE Palabra
+
+document.addEventListener('DOMContentLoaded', function () {
+    const botonEliminar = document.getElementById('Eliminar');
+    const seleccionPalabra = document.getElementById('seleccionPalabra');
+
+    botonEliminar.addEventListener('click', function() {
+        const id = seleccionPalabra.value;
+
+        if (!id) {
+            showBootstrapAlert(false, 'Por favor, selecciona una palabra antes de intentar eliminar.');
+            return;
+        }
+
+        eliminarPalabra(id);
+    });
+});
+
+function eliminarPalabra(id) {
+    fetch(`http://localhost:3000/deletePalabra/${id}`, {
+        method: 'DELETE'
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('No se pudo eliminar la palabra');
+        }
+        return response.json();
+    })
+    .then(data => {
+        showBootstrapAlert(true, data.mensaje);
+        cargarPalabras(); 
+    })
+    .catch(error => {
+        console.error('Error al eliminar la palabra:', error);
+        showBootstrapAlert(false, error.message || 'Error al eliminar la palabra.');
+    });
+}
 
 
 

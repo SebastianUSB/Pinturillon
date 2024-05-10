@@ -52,5 +52,23 @@ router.post('/postPalabras', async (req, res) => {
     }
 });
 
+// Ruta para eliminar una palabra
+router.delete('/deletePalabra/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const deleteQuery = 'DELETE FROM palabra WHERE id_palabra = $1';
+        const response = await pool.query(deleteQuery, [id]);
+
+        if (response.rowCount === 0) {
+            return res.status(404).json({ mensaje: "Palabra no encontrada" });
+        }
+
+        res.json({ mensaje: "Palabra eliminada correctamente" });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send("Error del servidor al eliminar la palabra");
+    }
+});
+
 
 module.exports = router;
