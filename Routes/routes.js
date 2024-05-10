@@ -94,6 +94,90 @@ router.put('/updatePalabra/:id', async (req, res) => {
     }
 });
 
+// Ruta para obtener todas las categorías
+router.get('/getCategorias', async (req, res) => {
+    try {
+        const resultado = await pool.query('SELECT * FROM categoria');
+        const categoriasModificadas = resultado.rows.map(categoria => {
+            return {
+                ...categoria,
+                nombre: categoria.nombre.charAt(0).toUpperCase() + categoria.nombre.slice(1)
+            };
+        });
+        res.json(categoriasModificadas);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send("Error del servidor al obtener las categorías");
+    }
+});
+
+// Ruta para agregar una nueva categoría
+router.post('/postCategorias', async (req, res) => {
+    try {
+        const nombre = req.body.nombre.toLowerCase();
+
+        const existe = await pool.query(
+            'SELECT * FROM categoria WHERE nombre = $1',
+            [nombre]
+        );
+
+        if (existe.rows.length > 0) {
+            return res.status(400).json({ mensaje: 'La categoría ya existe' });
+        }
+
+        const nuevaCategoria = await pool.query(
+            'INSERT INTO categoria (nombre) VALUES ($1) RETURNING *',
+            [nombre]
+        );
+
+        res.json({ categoria: nuevaCategoria.rows[0], mensaje: `La categoría '${nombre}' se agregó correctamente` });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send("Error del servidor al agregar la categoría");
+    }
+});
+
+// Ruta para eliminar una categoría
+router.delete('/deleteCategoria/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const deleteQuery = 'DELETE FROM categoria WHERE id_categoria = $1';
+        const response = await pool.query(deleteQuery, [id]);
+
+        if (response.rowCount === 0) {
+            return res.status(404).json({ mensaje: "Categoría no encontrada" });
+        }
+
+        res.json({ mensaje: "Categoría eliminada correctamente" });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send("Error del servidor al eliminar la categoría");
+    }
+});
+
+// Ruta para actualizar una categoría
+router.put('/updateCategoria/:id', async (req, res) => {
+    const { id } = req.params;
+    const nombre = req.body.nombre.toLowerCase();
+
+    if (!nombre) {
+        return res.status(400).json({ mensaje: "El nombre de la categoría es necesario para actualizar" });
+    }
+
+    try {
+        const updateQuery = 'UPDATE categoria SET nombre = $1 WHERE id_categoria = $2 RETURNING *';
+        const response = await pool.query(updateQuery, [nombre, id]);
+
+        if (response.rows.length === 0) {
+            return res.status(404).json({ mensaje: "Categoría no encontrada para actualizar" });
+        }
+
+        res.json({ categoria: response.rows[0], mensaje: "Categoría actualizada correctamente" });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send("Error del servidor al actualizar la categoría");
+    }
+});
 
 
 module.exports = router;
