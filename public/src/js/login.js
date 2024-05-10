@@ -103,43 +103,42 @@ function showBootstrapAlert(success, message) {
 }
 
 //Get Palabras
-document.addEventListener('DOMContentLoaded', function() {
-    // Obtener todos los elementos select relacionados con palabras
-    const seleccionPalabraEliminar = document.getElementById('seleccionPalabra');
-    const seleccionPalabraEditar = document.getElementById('seleccionPalabraEditar');
-    const seleccionPalabraCategoria = document.getElementById('seleccionPalabraCategoria');
-    const seleccionPalabraDesvincular = document.getElementById('seleccionPalabraDesvincular');
+function cargarPalabras() {
+    const selects = [
+        document.getElementById('seleccionPalabra'),
+        document.getElementById('seleccionPalabraEditar'),
+        document.getElementById('seleccionPalabraCategoria'),
+        document.getElementById('seleccionPalabraDesvincular')
+    ];
 
-    // Función para cargar las palabras en los select
-    function cargarPalabras() {
-        fetch('http://localhost:3000/getPalabras') // Asegúrate de que la URL es correcta
-            .then(response => response.json())
-            .then(data => {
-                // Ordenar alfabéticamente por el texto de la palabra
-                data.sort((a, b) => a.texto.localeCompare(b.texto));
-                
-                data.forEach(palabra => {
-                    // Crear una opción para cada select
-                    const opcionEliminar = new Option(palabra.texto, palabra.id_palabra);
-                    const opcionEditar = new Option(palabra.texto, palabra.id_palabra);
-                    const opcionCategoria = new Option(palabra.texto, palabra.id_palabra);
-                    const opcionDesvincular = new Option(palabra.texto, palabra.id_palabra);
+    // Limpiar los selects existentes
+    selects.forEach(select => {
+        while (select.firstChild) {
+            select.removeChild(select.firstChild);
+        }
+        const defaultOption = document.createElement('option');
+        defaultOption.textContent = select.id === 'seleccionPalabra' ? "Selecciona una palabra para Eliminar" :
+                                    select.id === 'seleccionPalabraEditar' ? "Selecciona una palabra para Editarla" :
+                                    select.id === 'seleccionPalabraCategoria' ? "Selecciona una palabra para Asociar" :
+                                    "Selecciona una palabra para Desvincular";
+        select.appendChild(defaultOption);
+    });
 
-                    // Añadir la opción en cada select
-                    seleccionPalabraEliminar.appendChild(opcionEliminar);
-                    seleccionPalabraEditar.appendChild(opcionEditar);
-                    seleccionPalabraCategoria.appendChild(opcionCategoria);
-                    seleccionPalabraDesvincular.appendChild(opcionDesvincular);
-                });
-            })
-            .catch(error => {
-                console.error('Error al cargar las palabras:', error);
+    // Cargar palabras desde el servidor
+    fetch('http://localhost:3000/getPalabras')
+        .then(response => response.json())
+        .then(data => {
+            data.sort((a, b) => a.texto.localeCompare(b.texto));
+            data.forEach(palabra => {
+                const opcion = new Option(palabra.texto, palabra.id_palabra);
+                selects.forEach(select => select.appendChild(opcion.cloneNode(true)));
             });
-    }
+        })
+        .catch(error => {
+            console.error('Error al cargar las palabras:', error);
+        });
+}
 
-    // Llamar a la función al cargar la página
-    cargarPalabras();
-});
 
 
 
@@ -172,6 +171,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 .then(data => {
                     if (data.mensaje) {
                         showBootstrapAlert(true, data.mensaje);
+                        cargarPalabras();
                     }
                     palabraInput.value = ''; // Limpiar el input después de enviar
                 })
@@ -193,6 +193,6 @@ document.addEventListener('DOMContentLoaded', function () {
 //Funcion de inicio de pagina
 
 document.addEventListener('DOMContentLoaded', function() {
-
+    cargarPalabras();
 });
 
