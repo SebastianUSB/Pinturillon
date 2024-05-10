@@ -224,6 +224,53 @@ function eliminarPalabra(id) {
     });
 }
 
+//PUT palabra
+document.addEventListener('DOMContentLoaded', function () {
+    const botonEditar = document.getElementById('Editar');
+    const seleccionPalabraEditar = document.getElementById('seleccionPalabraEditar');
+    const inputEditarPalabra = document.getElementById('EditarPalabra');
+
+    botonEditar.addEventListener('click', function() {
+        const id = seleccionPalabraEditar.value;
+        const nuevoTexto = inputEditarPalabra.value.trim();
+
+        if (!id) {
+            showBootstrapAlert(false, 'Por favor, selecciona una palabra antes de intentar editar.');
+            return;
+        }
+
+        if (!nuevoTexto) {
+            showBootstrapAlert(false, 'Por favor, escribe el nuevo texto para la palabra.');
+            return;
+        }
+
+        actualizarPalabra(id, nuevoTexto);
+    });
+});
+
+function actualizarPalabra(id, texto) {
+    fetch(`http://localhost:3000/updatePalabra/${id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ texto: texto })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('No se pudo actualizar la palabra');
+        }
+        return response.json();
+    })
+    .then(data => {
+        showBootstrapAlert(true, data.mensaje);
+        cargarPalabras();
+    })
+    .catch(error => {
+        console.error('Error al actualizar la palabra:', error);
+        showBootstrapAlert(false, error.message || 'Error al actualizar la palabra.');
+    });
+}
 
 
 //Funcion de inicio de pagina

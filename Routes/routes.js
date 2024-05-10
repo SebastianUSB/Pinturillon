@@ -70,5 +70,30 @@ router.delete('/deletePalabra/:id', async (req, res) => {
     }
 });
 
+//ruta para Editar una palabra
+router.put('/updatePalabra/:id', async (req, res) => {
+    const { id } = req.params;
+    const texto = req.body.texto.toLowerCase();
+
+    if (!texto) {
+        return res.status(400).json({ mensaje: "El texto de la palabra es necesario para actualizar" });
+    }
+
+    try {
+        const updateQuery = 'UPDATE palabra SET texto = $1 WHERE id_palabra = $2 RETURNING *';
+        const response = await pool.query(updateQuery, [texto, id]);
+
+        if (response.rows.length === 0) {
+            return res.status(404).json({ mensaje: "Palabra no encontrada para actualizar" });
+        }
+
+        res.json({ palabra: response.rows[0], mensaje: "Palabra actualizada correctamente" });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send("Error del servidor al actualizar la palabra");
+    }
+});
+
+
 
 module.exports = router;
