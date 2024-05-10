@@ -139,13 +139,41 @@ function cargarPalabras() {
         });
 }
 
+//GET Salas
+function cargarSalas() {
+    const seleccionSala = document.getElementById('seleccionSala');
+
+    fetch('http://localhost:3000/getSalas')
+        .then(response => response.json())
+        .then(salas => {
+            seleccionSala.length = 1;
+
+            salas.forEach(sala => {
+                const option = new Option(sala.nombre, sala.id_sala);
+                seleccionSala.add(option);
+            });
+        })
+        .catch(error => {
+            console.error('Error al cargar las salas:', error);
+            showBootstrapAlert(false, 'Error al cargar las salas.');
+        });
+}
+
+// Evento para cargar las salas cuando la página esté completamente cargada
+document.addEventListener('DOMContentLoaded', function() {
+    cargarSalas();
+});
+
+
+
 //GET Categorías
 function cargarCategorias() {
     const selects = [
         document.getElementById('seleccionCategoria'),
         document.getElementById('seleccionCategoriaEditar'),
         document.getElementById('seleccionCategoriaPalabra'),
-        document.getElementById('seleccionCategoriaDesvincular')
+        document.getElementById('seleccionCategoriaDesvincular'),
+        document.getElementById('seleccionCategoriaJuego')
     ];
 
     // Limpiar los selects existentes
@@ -157,7 +185,8 @@ function cargarCategorias() {
         defaultOption.textContent = select.id === 'seleccionCategoria' ? "Selecciona una categoria para Eliminar" :
                                     select.id === 'seleccionCategoriaEditar' ? "Selecciona una categoria para Editarla" :
                                     select.id === 'seleccionCategoriaPalabra' ? "Selecciona una categoria para Asociar" :
-                                    "Selecciona una categoria para Desvincular";
+                                    select.id === 'seleccionCategoriaDesvincular' ? "Selecciona una categoria para Desvincular":
+                                    "Selecciona una categoria";
         select.appendChild(defaultOption);
     });
 
@@ -176,6 +205,7 @@ function cargarCategorias() {
         });
 }
 
+//Filtro para mostrar las categorias de x palabras
 document.addEventListener('DOMContentLoaded', function () {
     const seleccionPalabraDesvincular = document.getElementById('seleccionPalabraDesvincular');
     const seleccionCategoriaDesvincular = document.getElementById('seleccionCategoriaDesvincular');
@@ -551,7 +581,6 @@ function desvincularPalabraCategoria(id_palabra, id_categoria) {
     })
     .then(data => {
         showBootstrapAlert(true, data.mensaje);
-        // Opcional: Actualizar los selects o la interfaz de usuario aquí
     })
     .catch(error => {
         console.error('Error al desvincular la palabra de la categoría:', error);
@@ -559,6 +588,78 @@ function desvincularPalabraCategoria(id_palabra, id_categoria) {
     });
 }
 
+//Crear Sala de Juego
+document.addEventListener('DOMContentLoaded', function () {
+    const botonCrear = document.getElementById('Crear');
+    const seleccionCategoriaJuego = document.getElementById('seleccionCategoriaJuego');
+    const inputNombreSala = document.getElementById('nombreSala');
+
+    botonCrear.addEventListener('click', function() {
+        const id_categoria = seleccionCategoriaJuego.value;
+        const nombre = inputNombreSala.value.trim();
+
+        if (!id_categoria) {
+            showBootstrapAlert(false, 'Por favor, selecciona una categoría.');
+            return;
+        }
+
+        if (!nombre) {
+            showBootstrapAlert(false, 'Por favor, escribe un nombre para la sala.');
+            return;
+        }
+
+        crearSala(nombre, id_categoria);
+    });
+});
+
+function crearSala(nombre, id_categoria) {
+    fetch('http://localhost:3000/crearSala', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ nombre: nombre, id_categoria: id_categoria })
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(data => {
+                throw new Error(data.mensaje || 'Error al crear la sala');
+            });
+        }
+        return response.json();
+    })
+    .then(data => {
+        showBootstrapAlert(true, data.mensaje);
+        cargarSalas();
+    })
+    .catch(error => {
+        console.error('Error al crear la sala:', error);
+        showBootstrapAlert(false, error.message || 'Error al crear la sala');
+    });
+}
+
+//Eliminar Sala
+document.getElementById('Eliminar3').addEventListener('click', function() {
+    const idSala = document.getElementById('seleccionSala').value;
+
+    if (!idSala) {
+        showBootstrapAlert(false, 'Por favor, selecciona una sala para eliminar.');
+        return;
+    }
+
+    fetch(`http://localhost:3000/eliminarSala/${idSala}`, {
+        method: 'DELETE'
+    })
+    .then(response => response.json())
+    .then(data => {
+        showBootstrapAlert(true, data.mensaje);
+        cargarSalas(); // Recargar la lista de salas si es necesario
+    })
+    .catch(error => {
+        console.error('Error al eliminar la sala:', error);
+        showBootstrapAlert(false, 'Error al eliminar la sala: ' + error.message);
+    });
+});
 
 
 //Funcion de inicio de pagina
@@ -566,5 +667,6 @@ function desvincularPalabraCategoria(id_palabra, id_categoria) {
 document.addEventListener('DOMContentLoaded', function() {
     cargarPalabras();
     cargarCategorias();
+    cargarSalas();
 });
 

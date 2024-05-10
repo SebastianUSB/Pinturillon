@@ -253,5 +253,59 @@ router.get('/getCategoriasPorPalabra/:id_palabra', async (req, res) => {
     }
 });
 
+// Ruta para crear una nueva sala de juego
+router.post('/crearSala', async (req, res) => {
+    const { nombre, id_categoria } = req.body;
+    const estado = "Activo";
+
+    if (!nombre || !id_categoria) {
+        return res.status(400).json({ mensaje: "Todos los campos son necesarios (nombre, id_categoria)" });
+    }
+
+    try {
+        const nuevaSala = await pool.query(
+            'INSERT INTO sala_de_juego (nombre, id_categoria, estado) VALUES ($1, $2, $3) RETURNING *',
+            [nombre, id_categoria, estado]
+        );
+
+        res.json({ sala: nuevaSala.rows[0], mensaje: "Sala creada correctamente con estado 'Activo'" });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send("Error del servidor al crear la sala");
+    }
+});
+
+// Ruta para obtener todas las salas de juego
+router.get('/getSalas', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT id_sala, nombre FROM sala_de_juego');
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send("Error del servidor al obtener las salas");
+    }
+});
+
+// Ruta para eliminar una sala de juego por ID
+router.delete('/eliminarSala/:id', async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        // Realiza la eliminación en la base de datos
+        const deleteQuery = 'DELETE FROM sala_de_juego WHERE id_sala = $1';
+        const result = await pool.query(deleteQuery, [id]);
+
+        if (result.rowCount === 0) {
+            // No se encontró la sala o no se pudo eliminar
+            return res.status(404).json({ mensaje: "Sala no encontrada o ya eliminada" });
+        }
+
+        // Si la eliminación fue exitosa, envía una respuesta positiva
+        res.json({ mensaje: "Sala eliminada correctamente" });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send("Error del servidor al eliminar la sala");
+    }
+});
 
 module.exports = router;
