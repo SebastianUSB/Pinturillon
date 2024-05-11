@@ -159,10 +159,32 @@ function cargarSalas() {
         });
 }
 
-// Evento para cargar las salas cuando la página esté completamente cargada
-document.addEventListener('DOMContentLoaded', function() {
-    cargarSalas();
-});
+function cargarSalasEnTabla() {
+    console.log("Cargando salas desde el servidor...");
+    fetch('http://localhost:3000/getSalas')
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Problema al recibir datos del servidor');
+        }
+        return response.json();
+    })
+    .then(salas => {
+        console.log("Salas recibidas:", salas);
+        const tablaSalas = document.getElementById('tablaSalas');
+        if (!salas.length) {
+            console.log("No hay salas para mostrar.");
+            return;
+        }
+
+        $('#tablaSalas').bootstrapTable('load', salas);
+    })
+    .catch(error => {
+        console.error('Error al cargar las salas:', error);
+        showBootstrapAlert(false, 'Error al cargar las salas.');
+    });
+}
+
+
 
 
 
@@ -631,6 +653,7 @@ function crearSala(nombre, id_categoria) {
     .then(data => {
         showBootstrapAlert(true, data.mensaje);
         cargarSalas();
+        cargarSalasEnTabla();
     })
     .catch(error => {
         console.error('Error al crear la sala:', error);
@@ -653,7 +676,8 @@ document.getElementById('Eliminar3').addEventListener('click', function() {
     .then(response => response.json())
     .then(data => {
         showBootstrapAlert(true, data.mensaje);
-        cargarSalas(); // Recargar la lista de salas si es necesario
+        cargarSalas();
+        cargarSalasEnTabla();
     })
     .catch(error => {
         console.error('Error al eliminar la sala:', error);
@@ -668,5 +692,6 @@ document.addEventListener('DOMContentLoaded', function() {
     cargarPalabras();
     cargarCategorias();
     cargarSalas();
+    cargarSalasEnTabla();
 });
 

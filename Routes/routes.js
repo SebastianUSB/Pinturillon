@@ -278,13 +278,19 @@ router.post('/crearSala', async (req, res) => {
 // Ruta para obtener todas las salas de juego
 router.get('/getSalas', async (req, res) => {
     try {
-        const result = await pool.query('SELECT id_sala, nombre FROM sala_de_juego');
+        const query = `
+            SELECT s.id_sala, s.nombre, c.nombre as nombre_categoria, s.estado
+            FROM sala_de_juego s
+            JOIN categoria c ON s.id_categoria = c.id_categoria
+        `;
+        const result = await pool.query(query);
         res.json(result.rows);
     } catch (err) {
         console.error(err.message);
         res.status(500).send("Error del servidor al obtener las salas");
     }
 });
+
 
 // Ruta para eliminar una sala de juego por ID
 router.delete('/eliminarSala/:id', async (req, res) => {

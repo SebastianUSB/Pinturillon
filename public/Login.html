@@ -11,6 +11,8 @@
      <title>Iniciar Sesión - Pinturillon</title>
      <!-- Bootstrap CSS -->
      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+     <!-- Bootstrap Table CSS -->
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-table/dist/bootstrap-table.min.css">
      <!-- Font Awesome Icons -->
      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
      <!-- Custom Styles -->
@@ -181,30 +183,21 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <div class="filters">
-                            <select class="form-select mt-2" id="filtroCategoria">
-                                <option value="">Filtrar por categoría</option>
-                            </select>
-                            <select class="form-select mt-2" id="filtroEstado">
-                                <option value="">Filtrar por estado</option>
-                                <option value="activo">Activo</option>
-                                <option value="enJuego">En Juego</option>
-                            </select>
-                        </div>
-                        <table class="table">
+                        <table class="table" id="tablaSalas" data-toggle="table" data-search="true" data-filter-control="true" data-show-search-clear-button="true">
                             <thead>
                                 <tr>
-                                    <th>Número de Sala</th>
-                                    <th>Nombre de la sala</th>
-                                    <th>Categoria</th>
-                                    <th>Estado</th>
-                                    <th>Acción</th>
+                                    <th data-field="id_sala" data-sortable="true">Número de Sala</th>
+                                    <th data-field="nombre" data-sortable="true" data-filter-control="input">Nombre de la sala</th>
+                                    <th data-field="nombre_categoria" data-sortable="true" data-filter-control="select">Categoría</th>
+                                    <th data-field="estado" data-sortable="true" data-filter-control="select">Estado</th>
                                 </tr>
                             </thead>
-                            <tbody id="tablaSalas">
+                            <tbody>
                                 <!-- Las salas se cargarán dinámicamente aquí -->
                             </tbody>
                         </table>
+                        
+
                     </div>
                 </div>
             </div>
@@ -250,8 +243,14 @@
         </div>
      </div>
      <!-- archivos externos --> 
-     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+     <!-- jQuery -->
+     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+     <!-- Bootstrap Bundle (incluye Popper) -->
+     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+     <!-- Bootstrap Table -->
+     <script src="https://cdn.jsdelivr.net/npm/bootstrap-table/dist/bootstrap-table.min.js"></script>
+     <!-- Bootstrap Table - Filter Control Extension -->
+     <script src="https://cdn.jsdelivr.net/npm/bootstrap-table/dist/extensions/filter-control/bootstrap-table-filter-control.min.js"></script>
      <script src="src/js/login.js"></script>     
  </body>
  </html> 
