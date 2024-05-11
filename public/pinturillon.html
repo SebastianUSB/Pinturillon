@@ -13,6 +13,8 @@
     
 </head>
 <body>
+    <div id="alert-placeholder" style="position: fixed; top: 20px; right: 20px; z-index: 1050;"></div>
+
     <!-- Canvas for Drawing -->
     <canvas id="drawingCanvas"></canvas>
 
@@ -48,7 +50,7 @@
     </div>
 
     <!-- Chat -->
-    <div id="chatContainer" class="chat-container">
+    <div id="chatContainer" class="chat-container" style="display: none;">
         <div class="chat-header">
             <span class="close-chat">&times;</span>
             <h3>Chat</h3>
@@ -81,6 +83,10 @@
         </div>
     </nav>
     <!-- Java externo -->
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <!--Socket.io-->
+    <script src="/socket.io/socket.io.js"></script>
     <script src="src/js/index.js"></script>
 
 </body>

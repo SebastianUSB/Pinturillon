@@ -184,10 +184,6 @@ function cargarSalasEnTabla() {
     });
 }
 
-
-
-
-
 //GET Categorías
 function cargarCategorias() {
     const selects = [
@@ -564,8 +560,6 @@ function asociarPalabraCategoria(id_palabra, id_categoria) {
     });
 }
 
-
-
 //Desvincular Palabra Categoria
 document.addEventListener('DOMContentLoaded', function () {
     const botonDesvincular = document.getElementById('Desvincular');
@@ -685,6 +679,44 @@ document.getElementById('Eliminar3').addEventListener('click', function() {
     });
 });
 
+//Unirse a un sala
+
+document.addEventListener('DOMContentLoaded', function(){
+    const socket = io();
+
+    const form = document.getElementById('loginForm');
+    const roomInput = document.getElementById('room');
+    const usernameInput = document.getElementById('username');
+    const avatarImg = document.getElementById('selectedAvatar');
+
+    // Manejar la recepción de la respuesta una vez y no cada vez que se envía el formulario
+    socket.on('joined_room', function(data){
+        if(data.success){
+            sessionStorage.setItem('username', usernameInput.value.trim());
+            sessionStorage.setItem('room', roomInput.value.trim());
+            window.location.href = '/Pinturillon.html?room=' + roomInput.value.trim();
+        } else {
+            showBootstrapAlert(false, data.message);
+        }
+    });
+
+    form.addEventListener('submit', function(e){
+        e.preventDefault(); 
+
+        const room = roomInput.value.trim();
+        const username = usernameInput.value.trim();
+        const avatar = avatarImg.src;
+
+        if(!room || !username){
+            showBootstrapAlert(false, 'Por favor, completa todos los campos');
+            return; // Asegúrate de salir de la función si hay campos inválidos.
+        }
+
+        // Emitir evento para unirme a la sala
+        socket.emit('join_room', {room, username, avatar});
+    });
+});
+
 
 //Funcion de inicio de pagina
 
@@ -695,3 +727,7 @@ document.addEventListener('DOMContentLoaded', function() {
     cargarSalasEnTabla();
 });
 
+window.onload = function() {
+    sessionStorage.clear();
+    console.log('Session storage cleared!');
+  };

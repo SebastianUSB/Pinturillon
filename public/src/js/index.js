@@ -42,15 +42,7 @@ chatBtn.onclick = function() {
     chatContainer.style.display = "none";
   };
   
-  // Función para enviar mensajes
-  sendMessageBtn.onclick = function() {
-    if (chatInput.value.trim() !== "") {
-      let newMessage = document.createElement("p");
-      newMessage.textContent = chatInput.value;
-      chatMessages.appendChild(newMessage);
-      chatInput.value = "";
-    }
-  };
+
 
   // Datos de ejemplo para las puntuaciones
   let scores = [
@@ -142,15 +134,88 @@ function resizeCanvas() {
   canvas.height = window.innerHeight - document.querySelector('.navbar-custom').offsetHeight;
 }
 
+function isChatVisible() {
+  return document.getElementById('chatContainer').style.display !== 'none';
+}
+
 // Llamado de funcion que ajusta la ventana
 
 resizeCanvas();
 
-// Cargar palabras cuando la página se cargue
+//Unete a la sala
+const username = sessionStorage.getItem('username');
+const room = sessionStorage.getItem('room');
+const socket = io()
+console.log(username, room)
 
-document.addEventListener('DOMContentLoaded', function() {
+socket.emit('join_room', { username, room });
 
+// Socket event handlers
+socket.on('user_joined', function(message) {
+  if (!isChatVisible()) {
+    showBootstrapAlert(true, message);
+  }
+  let chatMessages = document.getElementById('chatMessages');
+  let messageElement = document.createElement('p');
+  messageElement.textContent = message;
+  messageElement.classList.add('system-message');
+  chatMessages.appendChild(messageElement);
+
+  // Desplazar el scroll automáticamente al último mensaje
+  chatMessages.scrollTop = chatMessages.scrollHeight;
 });
+
+
+
+//Enviar Mensaje
+document.getElementById('sendMessage').addEventListener('click', function() {
+  let messageInput = document.getElementById('chatInput');
+  let message = messageInput.value.trim();
+  let username = sessionStorage.getItem('username');
+  let room = sessionStorage.getItem('room');
+
+  if(message.trim() !== "") {
+      socket.emit('send_message', {
+          room: room,
+          username: username,
+          message: message
+      });
+      document.getElementById('chatInput').value = '';
+  }
+});
+
+
+// Escuchar mensajes de chat entrantes
+socket.on('receive_message', function(data) {
+  if (!isChatVisible()) {
+    showBootstrapAlert(true, 'Nuevo mensaje de ' + data.username);
+  }
+  let chatMessages = document.getElementById('chatMessages');
+  let messageElement = document.createElement('p');
+  messageElement.textContent = `${data.username}: ${data.message}`;
+  chatMessages.appendChild(messageElement);
+
+  // Desplazar el scroll automáticamente al último mensaje
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+});
+
+function showBootstrapAlert(success, message) {
+  const alertPlaceholder = document.getElementById('alert-placeholder');
+  const wrapper = document.createElement('div');
+  const alertType = success ? 'alert-success' : 'alert-danger';
+  wrapper.innerHTML = `<div class="alert ${alertType} alert-dismissible fade show" role="alert">
+      ${message}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>`;
+
+  alertPlaceholder.appendChild(wrapper);
+
+  // Hacer que la alerta se cierre automáticamente después de 5 segundos
+  setTimeout(function() {
+      wrapper.remove();  // Cambiado para remover directamente el wrapper
+  }, 5000);
+}
+
 
 
   
