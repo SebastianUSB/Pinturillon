@@ -21,47 +21,60 @@
  <body>
     <div id="alert-placeholder" style="position: fixed; top: 20px; right: 20px; z-index: 9999;"></div>
      <div style="position: absolute; top: 20px; right: 20px;">
-         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#Opcionmodal">
+         <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#Opcionmodal">
              <i class="fa fa-cog"></i>
          </button>
      </div>
      <div class="container">
          <!-- Login Form -->
-         <div class="row justify-content-center">
-             <!-- Main Card for the Login Form -->
-             <div class="col-xl-6">
-                 <div class="card mt-5">
-                     <div class="card-header text-center">
-                         <h3>Iniciar Sesión - Pinturillon</h3>
-                     </div>
-                     <div class="card-body">
-                         <form>
-                             <!-- Avatar Selection Area -->
-                             <div class="mb-3 text-center">
-                                 <div class="avatar">
-                                     <img id="selectedAvatar" src="src/img/avatar1.png" alt="Avatar" />
-                                     <i class="fas fa-pencil-alt edit-icon" data-bs-toggle="modal" data-bs-target="#avatarModal"></i>
-                                 </div>
-                             </div>
-                             <!-- Username Input -->
-                             <div class="input-group mb-3">
-                                 <span class="input-group-text" id="basic-addon1"><i class="fa fa-user"></i></span>
-                                 <input type="text" class="form-control" placeholder="Nombre de Usuario" aria-label="Username" aria-describedby="basic-addon1" id="username" required>
-                             </div>
-                             <!-- Room Number -->
-                             <div class="input-group mb-3">
-                                 <span class="input-group-text" id="basic-addon2"><i class="fa fa-door-open"></i></span>
-                                 <input type="number" class="form-control" placeholder="Número de Sala" aria-label="Room" aria-describedby="basic-addon2" id="room" required>
-                             </div>
-                             <!-- Action buttons -->
-                             <button type="submit" class="btn btn-success" style="width: 99%;" formaction="index.html">Entrar</button>
-                             <button type="button" class="btn btn-primary" style="width: 49%; margin-top: 10px;" data-bs-toggle="modal" data-bs-target="#salasModal">Crear o Editar Salas</button>
-                             <button type="button" class="btn btn-info" style="width: 49%; margin-top: 10px;" data-bs-toggle="modal" data-bs-target="#roomsModal">Ver Salas Disponibles</button>
-                         </form>
-                     </div>
-                 </div>
-             </div>
+         <div class="d-flex align-items-center justify-content-center" style="height: 100vh;">
+            <div class="row justify-content-center">
+                <!-- Main Card for the Login Form -->
+                <div class="col-xl-12">
+                    <div class="card mt-5">
+                        <div class="card-header text-center">
+                            <h3>Iniciar Sesión - Pinturillon</h3>
+                        </div>
+                        <div class="card-body">
+                            <form>
+                                <!-- Avatar Selection Area -->
+                                <div class="mb-3 text-center">
+                                    <div class="avatar">
+                                        <img id="selectedAvatar" src="src/img/avatar1.png" alt="Avatar" />
+                                        <i class="fas fa-pencil-alt edit-icon" data-bs-toggle="modal" data-bs-target="#avatarModal"></i>
+                                    </div>
+                                </div>
+                                <!-- Username Input -->
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text" id="basic-addon1"><i class="fa fa-user"></i></span>
+                                    <input type="text" class="form-control" placeholder="Nombre de Usuario" aria-label="Username" aria-describedby="basic-addon1" id="username" required>
+                                </div>
+                                <!-- Room Number -->
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text" id="basic-addon2"><i class="fa fa-door-open"></i></span>
+                                    <input type="number" class="form-control" placeholder="Número de Sala" aria-label="Room" aria-describedby="basic-addon2" id="room" required>
+                                </div>
+                                <!-- Action buttons -->
+                                <div class="row mb-2">
+                                   <div class="col-12">
+                                       <button type="submit" class="btn btn-success col-12" formaction="index.html">Entrar</button>
+                                   </div>
+                               </div>
+                                <div class="row">
+                                   <div class="col-6">
+                                       <button type="button" class="btn btn-primary col-12" data-bs-toggle="modal" data-bs-target="#salasModal">Configurar Salas</button>
+                                   </div>
+                                   <div class="col-6">
+                                       <button type="button" class="btn btn-secondary col-12" data-bs-toggle="modal" data-bs-target="#roomsModal">Ver Salas</button>
+                                   </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
          </div>
+         
  
          <!-- Avatar Selection Modal -->
          <div class="modal fade" id="avatarModal" tabindex="-1" aria-labelledby="avatarModalLabel" aria-hidden="true">
@@ -91,22 +104,49 @@
                      </div>
                      <div class="modal-body">
                          <div class="d-flex flex-wrap justify-content-center">
-                             <!-- Botón para agregar palabra -->
-                             <button type="button" class="btn btn-primary" id="show1">Agregar Palabra</button>
-                             <!-- Botón para Eliminar Palabra -->
-                             <button type="button" class="btn btn-primary" id="show2" style="margin-left: 10px;">Eliminar Palabra</button>
-                             <!-- Botón para Editar Palabra -->
-                             <button type="button" class="btn btn-primary" id="show3" style="margin-left: 10px;">Editar Palabra</button>
-                             <!-- Botón para agregar Nueva Categoria -->
-                             <button type="button" class="btn btn-primary" id="show4" style="margin-left: 10px;">Agregar Nueva Categoria</button>
-                             <!-- Botón para Eliminar Categoria -->
-                             <button type="button" class="btn btn-primary" id="show5" style="margin-left: 10px; margin-top:10px;">Eliminar Categoria</button>
-                             <!-- Botón para Editar Categoria -->
-                             <button type="button" class="btn btn-primary" id="show6" style="margin-left: 10px; margin-top:10px;">Editar Categoria</button>
-                             <!-- Botón para Asociar Palabras a Categorias -->
-                             <button type="button" class="btn btn-primary" id="show7" style="margin-left: 10px; margin-top:10px;">Asociar Palabras a Categorias</button>
-                             <!-- Botón para Desvincular Palabra de Categoria -->
-                             <button type="button" class="btn btn-primary" id="show8" style="margin-left: 10px; margin-top:10px;">Desvincular Palabra de Categoria</button>
+                            <div class="container">
+                                <div class="row mb-2">
+                                    <div class="col-4">
+                                        <!-- Botón para agregar palabra -->
+                                        <button type="button" class="btn btn-primary col-12" id="show1">Agregar Palabra</button>
+                                    </div>
+                                    <div class="col-4">
+                                        <!-- Botón para Eliminar Palabra -->
+                                        <button type="button" class="btn btn-primary col-12" id="show2">Eliminar Palabra</button>
+                                    </div>
+                                    <div class="col-4">
+                                        <!-- Botón para Editar Palabra -->
+                                        <button type="button" class="btn btn-primary col-12" id="show3">Editar Palabra</button>
+                                    </div>
+                                 </div>
+    
+                                 <div class="row mb-2">
+                                    <div class="col-4">
+                                        <!-- Botón para agregar Nueva Categoria -->
+                                        <button type="button" class="btn btn-primary col-12" id="show4">Agregar Categoria</button>
+                                    </div>
+                                    <div class="col-4">
+                                        <!-- Botón para Eliminar Categoria -->
+                                        <button type="button" class="btn btn-primary col-12" id="show5">Eliminar Categoria</button>
+                                    </div>
+                                    <div class="col-4">
+                                        <!-- Botón para Editar Categoria -->
+                                        <button type="button" class="btn btn-primary col-12" id="show6">Editar Categoria</button>
+                                    </div>
+                                 </div>
+                                 <div class="row">
+                                    <div class="col-6">
+                                        <!-- Botón para Asociar Palabras a Categorias -->
+                                        <button type="button" class="btn btn-primary col-12" id="show7">Asociar Palabras a Categorias</button>
+                                    </div>
+                                    <div class="col-6">
+                                        <!-- Botón para Desvincular Palabra de Categoria -->
+                                        <button type="button" class="btn btn-primary col-12" id="show8">Desvincular Palabra de Categoria</button>
+                                    </div>
+                                 </div>
+                            </div>
+                             
+                             
                              <!-- Div para agregar palabra -->
                              <div id="container1" style="display: none; width: 100%; margin-top: 10px;">
                                 <input type="text" class="form-control" id="agregarPalabra" name= "agregarPalabra" placeholder="Escribe una palabra">
@@ -201,11 +241,9 @@
                     </div>
                 </div>
             </div>
-        </div>
-        
          </div>
-
-         <!-- Avatar Selection Modal -->
+        
+         <!-- Salas Modal -->
          <div class="modal fade" id="salasModal" tabindex="-1" aria-labelledby="salasModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -215,10 +253,20 @@
                     </div>
                     <div class="modal-body">
                         <div class="d-flex flex-wrap justify-content-center">
-                            <!-- Botón para crear Sala -->
-                            <button type="button" class="btn btn-primary" id="sala1">Crear Sala de Juego</button>
-                            <!-- Botón para crear Sala -->
-                            <button type="button" class="btn btn-primary" id="sala2" style="margin-left: 10px;">Eliminar Sala de Juego</button>
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <!-- Botón para crear Sala -->
+                                        <button type="button" class="btn btn-primary col-12" id="sala1">Crear Sala de Juego</button>
+                                    </div>
+                                    <div class="col-6">
+                                        <!-- Botón para crear Sala -->
+                                        <button type="button" class="btn btn-primary col-12" id="sala2" style="margin-left: 10px;">Eliminar Sala de Juego</button>
+                                    </div>                      
+                                </div>
+
+                            </div>
+                            
 
                             <!-- Div para Crear Sala-->
                             <div id="containers1" style="display: none; width: 100%; margin-top: 10px;">
