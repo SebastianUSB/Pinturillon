@@ -291,6 +291,22 @@ router.get('/getSalas', async (req, res) => {
     }
 });
 
+// Ruta para obtener información de una sala específica
+router.get('/getSala/:idSala', async (req, res) => {
+    const { idSala } = req.params;
+    try {
+        const result = await pool.query('SELECT * FROM sala_de_juego WHERE id_sala = $1', [idSala]);
+        if (result.rows.length > 0) {
+            res.json(result.rows[0]);
+        } else {
+            res.status(404).json({ mensaje: "Sala no encontrada" });
+        }
+    } catch (error) {
+        console.error('Error al obtener información de la sala:', error);
+        res.status(500).send("Error del servidor al obtener información de la sala");
+    }
+});
+
 
 // Ruta para eliminar una sala de juego por ID
 router.delete('/eliminarSala/:id', async (req, res) => {
@@ -311,6 +327,21 @@ router.delete('/eliminarSala/:id', async (req, res) => {
     } catch (err) {
         console.error(err.message);
         res.status(500).send("Error del servidor al eliminar la sala");
+    }
+});
+
+// En tu archivo de rutas de Express, por ejemplo, routes.js
+router.get('/getPalabrasPorCategoria/:idCategoria', async (req, res) => {
+    try {
+        const { idCategoria } = req.params;
+        const resultado = await pool.query(
+            'SELECT p.* FROM palabra p JOIN palabras_por_categoria cp ON p.id_palabra = cp.id_palabra WHERE cp.id_categoria = $1',
+            [idCategoria]
+        );
+        res.json(resultado.rows);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send("Error del servidor al obtener las palabras por categoría");
     }
 });
 

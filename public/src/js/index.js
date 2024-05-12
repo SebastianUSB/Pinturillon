@@ -142,79 +142,137 @@ function isChatVisible() {
 
 resizeCanvas();
 
-//Unete a la sala
 const username = sessionStorage.getItem('username');
 const room = sessionStorage.getItem('room');
-const socket = io()
-console.log(username, room)
 
-socket.emit('join_room', { username, room });
-
-// Socket event handlers
-socket.on('user_joined', function(message) {
-  if (!isChatVisible()) {
-    showBootstrapAlert(true, message);
-  }
-  let chatMessages = document.getElementById('chatMessages');
-  let messageElement = document.createElement('p');
-  messageElement.textContent = message;
-  messageElement.classList.add('system-message');
-  chatMessages.appendChild(messageElement);
-
-  // Desplazar el scroll automáticamente al último mensaje
-  chatMessages.scrollTop = chatMessages.scrollHeight;
-});
-
-
-
-//Enviar Mensaje
-document.getElementById('sendMessage').addEventListener('click', function() {
-  let messageInput = document.getElementById('chatInput');
-  let message = messageInput.value.trim();
-  let username = sessionStorage.getItem('username');
-  let room = sessionStorage.getItem('room');
-
-  if(message.trim() !== "") {
-      socket.emit('send_message', {
-          room: room,
-          username: username,
-          message: message
+function obtenerCategoriaDeSala(idSala) {
+  fetch(`http://localhost:3000/getSala/${idSala}`)
+      .then(response => response.json())
+      .then(sala => {
+          if (sala && sala.id_categoria) {
+              cargarPalabraAleatoriaPorCategoria(sala.id_categoria);
+          } else {
+              console.error('La sala no tiene una categoría asignada o no existe.');
+          }
+      })
+      .catch(error => {
+          console.error('Error al obtener la información de la sala:', error);
       });
-      document.getElementById('chatInput').value = '';
-  }
-});
-
-
-// Escuchar mensajes de chat entrantes
-socket.on('receive_message', function(data) {
-  if (!isChatVisible()) {
-    showBootstrapAlert(true, 'Nuevo mensaje de ' + data.username);
-  }
-  let chatMessages = document.getElementById('chatMessages');
-  let messageElement = document.createElement('p');
-  messageElement.textContent = `${data.username}: ${data.message}`;
-  chatMessages.appendChild(messageElement);
-
-  // Desplazar el scroll automáticamente al último mensaje
-  chatMessages.scrollTop = chatMessages.scrollHeight;
-});
-
-function showBootstrapAlert(success, message) {
-  const alertPlaceholder = document.getElementById('alert-placeholder');
-  const wrapper = document.createElement('div');
-  const alertType = success ? 'alert-success' : 'alert-danger';
-  wrapper.innerHTML = `<div class="alert ${alertType} alert-dismissible fade show" role="alert">
-      ${message}
-      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-  </div>`;
-
-  alertPlaceholder.appendChild(wrapper);
-
-  // Hacer que la alerta se cierre automáticamente después de 5 segundos
-  setTimeout(function() {
-      wrapper.remove();  // Cambiado para remover directamente el wrapper
-  }, 5000);
 }
+
+function cargarPalabraAleatoriaPorCategoria(idCategoria) {
+  fetch(`http://localhost:3000/getPalabrasPorCategoria/${idCategoria}`)
+      .then(response => {
+          if (!response.ok) {
+              throw new Error('Error al obtener palabras');
+          }
+          return response.json();
+      })
+      .then(palabras => {
+          if (palabras.length > 0) {
+              mostrarPalabraAleatoria(palabras);
+          } else {
+              console.log("No hay palabras disponibles en esta categoría.");
+          }
+      })
+      .catch(error => {
+          console.error('Error al cargar las palabras por categoría:', error);
+      });
+}
+
+function mostrarPalabraAleatoria(palabras) {
+  const indiceAleatorio = Math.floor(Math.random() * palabras.length);
+  const palabraAleatoria = palabras[indiceAleatorio].texto; // Asegúrate de que el campo 'texto' corresponda a tu base de datos.
+  const divPalabra = document.getElementById('randomWord');
+  divPalabra.textContent = palabraAleatoria; // Inserta la palabra aleatoria en el div.
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  const room = sessionStorage.getItem('room');
+  if (room) {
+    obtenerCategoriaDeSala(room);
+  } else {
+      console.error('No se encontró el ID de la sala en sessionStorage.');
+  }
+});
+
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////Socket io///////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+
+//Unete a la sala
+document.addEventListener('DOMContentLoaded', function() {
+  const socket = io();
+
+  const username = sessionStorage.getItem('username');
+  const room = sessionStorage.getItem('room');
+
+  // Verificar si los elementos del DOM están disponibles
+  const chatMessages = document.getElementById('chatMessages');
+  const messageInput = document.getElementById('chatInput');
+  const sendMessageButton = document.getElementById('sendMessage');
+  const alertPlaceholder = document.getElementById('alert-placeholder');
+
+  // Unirse a la sala
+  socket.emit('join_room', { username, room });
+
+  // Evento: Usuario se ha unido
+  socket.on('user_joined', function(message) {
+      if (!isChatVisible()) {
+          showBootstrapAlert(true, message);
+      }
+      appendMessage(message, 'system-message');
+  });
+
+  // Evento: Mensaje recibido
+  socket.on('receive_message', function(data) {
+      if (!isChatVisible()) {
+          showBootstrapAlert(true, 'Nuevo mensaje de ' + data.username);
+      }
+      appendMessage(`${data.username}: ${data.message}`);
+  });
+
+  // Enviar mensaje
+  sendMessageButton.addEventListener('click', function() {
+      let message = messageInput.value.trim();
+      if(message !== "") {
+          socket.emit('send_message', {
+              room: room,
+              username: username,
+              message: message
+          });
+          messageInput.value = '';
+      }
+  });
+
+  function appendMessage(message, cssClass = '') {
+      let messageElement = document.createElement('p');
+      messageElement.textContent = message;
+      if (cssClass) messageElement.classList.add(cssClass);
+      chatMessages.appendChild(messageElement);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+
+  function isChatVisible() {
+      return document.getElementById('chatContainer').style.display !== 'none';
+  }
+
+  function showBootstrapAlert(success, message) {
+      const wrapper = document.createElement('div');
+      const alertType = success ? 'alert-success' : 'alert-danger';
+      wrapper.innerHTML = `<div class="alert ${alertType} alert-dismissible fade show" role="alert">
+          ${message}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>`;
+  
+      alertPlaceholder.appendChild(wrapper);
+  
+      setTimeout(function() {
+          wrapper.remove();
+      }, 5000);
+  }
+});
+
 
 
 
