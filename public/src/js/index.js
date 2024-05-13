@@ -1,6 +1,6 @@
+// Elementos del DOM y configuración inicial
 let canvas = document.getElementById('drawingCanvas');
 let ctx = canvas.getContext('2d');
-let painting = false;
 let optionsBtn = document.querySelector(".btn-outline-light");
 let modal = document.getElementById("optionsModal");
 let closeModal = document.querySelector(".close");
@@ -19,131 +19,105 @@ let scoreBoard = document.getElementById("scoreBoard");
 let closeScore = document.querySelector(".close-score");
 let scoreList = document.getElementById("scoreList");
 let timerElement = document.getElementById("timer");
-let timeLeft = 60; 
+let alertPlaceholder = document.getElementById('alert-placeholder');
 
-function updateTimer() {
-    timerElement.textContent = timeLeft;
-    timeLeft -= 1;
+// Variables para controlar el estado de dibujo
+let isDrawing = false;
+let isDrawer = false; // Indica si el usuario actual es el dibujante
 
-    if (timeLeft < 0) {
-        clearInterval(timerInterval);
-    }
-}
+// Configuración de Socket.IO
+const socket = io();
+const room = sessionStorage.getItem('room');
+const username = sessionStorage.getItem('username');
 
-let timerInterval = setInterval(updateTimer, 1000);
+// Eventos de interacción UI
+chatBtn.onclick = () => chatContainer.style.display = "block";
+closeChat.onclick = () => chatContainer.style.display = "none";
+scoreBtn.onclick = () => scoreBoard.style.display = "block";
+closeScore.onclick = () => scoreBoard.style.display = "none";
+optionsBtn.onclick = () => modal.style.display = "block";
+closeModal.onclick = () => modal.style.display = "none";
 
-// Función para abrir el chat
-chatBtn.onclick = function() {
-    chatContainer.style.display = "block";
-  };
-  
-  // Función para cerrar el chat
-  closeChat.onclick = function() {
-    chatContainer.style.display = "none";
-  };
-  
-
-
-  // Datos de ejemplo para las puntuaciones
-  let scores = [
-      { name: "Luis", points: 45 },
-      { name: "Jaime", points: 25 },
-      { name: "Sergio", points: 20 },
-      { name: "Samuel", points: 5 }
-  ];
-  
-  // Función para abrir la lista de puntuaciones
-  scoreBtn.onclick = function() {
-    scoreBoard.style.display = "block";
-    scoreList.innerHTML = "";
-    scores.forEach(score => {
-        let listItem = document.createElement("li");
-        listItem.textContent = `${score.name} ${score.points}`;
-        scoreList.appendChild(listItem);
-    });
-  };
-  
-  // Función para cerrar la lista de puntuaciones
-  closeScore.onclick = function() {
-    scoreBoard.style.display = "none";
-  };
-
-// Función para abrir la ventana emergente
-optionsBtn.onclick = function() {
-  modal.style.display = "block";
-};
-
-// Función para cerrar la ventana emergente
-closeModal.onclick = function() {
-  modal.style.display = "none";
-};
-
-// Cambiar el color de fondo
-bgColorPicker.addEventListener("input", function() {
-  canvas.style.backgroundColor = this.value;
-});
-
-// Cambiar el color del pincel
-brushColorPicker.addEventListener("input", function() {
-  ctx.strokeStyle = this.value;
-});
-
-// Cambiar el tamaño del pincel
-brushSizePicker.addEventListener("input", function() {
-  ctx.lineWidth = this.value;
-});
-
-// Limpiar el canvas
-clearCanvasBtn.addEventListener("click", function() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-});
+// Control de los estilos de dibujo
+bgColorPicker.oninput = () => canvas.style.backgroundColor = bgColorPicker.value;
+brushColorPicker.oninput = () => ctx.strokeStyle = brushColorPicker.value;
+brushSizePicker.oninput = () => ctx.lineWidth = brushSizePicker.value;
+clearCanvasBtn.onclick = () => ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////Funciones de dibujo/////////////////////////////////
 function startPosition(e) {
-  painting = true;
-  draw(e);
+  if (isDrawer) {
+      isDrawing = true;
+      ctx.beginPath(); // Comenzar un nuevo trazo
+      ctx.moveTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop); // Comienza desde aquí
+      draw(e);
+  }
 }
 
 function finishedPosition() {
-  painting = false;
-  ctx.beginPath();
+  if (isDrawer && isDrawing) {
+      isDrawing = false;
+      ctx.beginPath(); // Reinicia el camino para el próximo trazo
+      socket.emit('end_draw', { room });
+  }
 }
 
 function draw(e) {
-  if (!painting) return;
-  ctx.lineWidth = brushSizePicker.value;
-  ctx.lineCap = 'round';
-  ctx.strokeStyle = brushColorPicker.value;
+  if (!isDrawing || !isDrawer) return;
 
-
+  // Dibuja al nuevo punto
   ctx.lineTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
   ctx.stroke();
-  ctx.beginPath();
+
+  // Mueve el contexto al nuevo punto para el siguiente trazo
   ctx.moveTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+
+  // Emitir los datos para cada movimiento de mouse
+  socket.emit('drawing', {
+      room: room,
+      x: e.clientX - canvas.offsetLeft,
+      y: e.clientY - canvas.offsetTop,
+      color: ctx.strokeStyle,
+      size: ctx.lineWidth
+  });
 }
 
-canvas.addEventListener('mousedown', startPosition);
-canvas.addEventListener('mouseup', finishedPosition);
-canvas.addEventListener('mousemove', draw);
+// Escuchar eventos de dibujo desde el servidor
+socket.on('drawing', (data) => {
+  if (!isDrawer) {
+      ctx.strokeStyle = data.color;
+      ctx.lineWidth = data.size;
+      ctx.lineTo(data.x, data.y);
+      ctx.stroke();
+      ctx.moveTo(data.x, data.y); // Preparar para el siguiente punto recibido
+  }
+});
 
-// Funcion de ajuste de ventana
-window.addEventListener('resize', resizeCanvas);
+function drawFromServer(data) {
+  ctx.beginPath();  // Comenzar un nuevo trazo
+  ctx.moveTo(data.x, data.y);  // Mover al punto inicial
+  ctx.strokeStyle = data.color;
+  ctx.lineWidth = data.size;
+  ctx.lineTo(data.x + 1, data.y + 1);  // Dibuja una línea pequeña para asegurar visibilidad
+  ctx.stroke();
+}
 
+
+socket.on('end_draw', () => ctx.beginPath());
+
+// Ajustar el tamaño del canvas cuando la ventana cambie de tamaño
 function resizeCanvas() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight - document.querySelector('.navbar-custom').offsetHeight;
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight - document.querySelector('.navbar-custom').offsetHeight;
 }
 
-function isChatVisible() {
-  return document.getElementById('chatContainer').style.display !== 'none';
-}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();  // Ajustar al cargar
 
-// Llamado de funcion que ajusta la ventana
-
-resizeCanvas();
-
-const username = sessionStorage.getItem('username');
-const room = sessionStorage.getItem('room');
+/////////////////////////////////////////////////////////////////////////////////
+//////////////////////////Funcion para palabras//////////////////////////////////
 
 function obtenerCategoriaDeSala(idSala) {
   fetch(`http://localhost:3000/getSala/${idSala}`)
@@ -196,22 +170,27 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
+//Tiempo
+// Escuchar actualizaciones del temporizador desde el servidor
+socket.on('timer_update', (data) => {
+  const timerElement = document.getElementById('timer');
+  timerElement.textContent = data.timeLeft;
+});
+
+socket.on('timer_end', () => {
+  const timerElement = document.getElementById('timer');
+  timerElement.textContent = '0';
+});
+
+
 /////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////Socket io///////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////
+
 
 //Unete a la sala
 document.addEventListener('DOMContentLoaded', function() {
-  const socket = io();
-
-  const username = sessionStorage.getItem('username');
-  const room = sessionStorage.getItem('room');
-
-  // Verificar si los elementos del DOM están disponibles
-  const chatMessages = document.getElementById('chatMessages');
   const messageInput = document.getElementById('chatInput');
   const sendMessageButton = document.getElementById('sendMessage');
-  const alertPlaceholder = document.getElementById('alert-placeholder');
 
   // Unirse a la sala
   socket.emit('join_room', { username, room });
@@ -232,6 +211,49 @@ document.addEventListener('DOMContentLoaded', function() {
       appendMessage(`${data.username}: ${data.message}`);
   });
 
+  // Escuchar si el usuario es el dibujante
+  socket.on('set_drawer', (data) => {
+    console.log("Set drawer: ", data.isDrawer);
+    isDrawer = data.isDrawer;
+    if (isDrawer) {
+        //document.querySelector(".btn-outline-light").style.display = 'block'; // Mostrar opciones
+        enableDrawing();
+    } else {
+        //document.querySelector(".btn-outline-light").style.display = 'none'; // Ocultar opciones
+        disableDrawing();
+    }
+  });
+
+  function enableDrawing() {
+      canvas.addEventListener('mousedown', startPosition);
+      canvas.addEventListener('mouseup', finishedPosition);
+      canvas.addEventListener('mousemove', draw);
+      canvas.style.pointerEvents = 'auto'; // Permite interacciones con el canvas
+  }
+
+  function disableDrawing() {
+      canvas.removeEventListener('mousedown', startPosition);
+      canvas.removeEventListener('mouseup', finishedPosition);
+      canvas.removeEventListener('mousemove', draw);
+      canvas.style.pointerEvents = 'none'; // Deshabilita interacciones con el canvas
+  }
+
+  // Evento para actualizar la lista de jugadores
+  socket.on('update_players', function(players) {
+    const scoreList = document.getElementById('scoreList');
+    scoreList.innerHTML = '';  // Limpiar la lista actual
+
+    players.forEach(player => {
+        const listItem = document.createElement('li');
+        listItem.textContent = `${player.username} - ${player.isDrawing ? 'Dibujando' : 'Adivinando'}`;
+        scoreList.appendChild(listItem);
+    });
+
+    if (!scoreBoard.style.display || scoreBoard.style.display === 'none') {
+        scoreBoard.style.display = 'block';  // Mostrar la lista de jugadores si no está visible
+    }
+  });
+
   // Enviar mensaje
   sendMessageButton.addEventListener('click', function() {
       let message = messageInput.value.trim();
@@ -244,6 +266,7 @@ document.addEventListener('DOMContentLoaded', function() {
           messageInput.value = '';
       }
   });
+  
 
   function appendMessage(message, cssClass = '') {
       let messageElement = document.createElement('p');
@@ -272,8 +295,3 @@ document.addEventListener('DOMContentLoaded', function() {
       }, 5000);
   }
 });
-
-
-
-
-  
