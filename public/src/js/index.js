@@ -119,56 +119,12 @@ resizeCanvas();  // Ajustar al cargar
 /////////////////////////////////////////////////////////////////////////////////
 //////////////////////////Funcion para palabras//////////////////////////////////
 
-function obtenerCategoriaDeSala(idSala) {
-  fetch(`http://localhost:3000/getSala/${idSala}`)
-      .then(response => response.json())
-      .then(sala => {
-          if (sala && sala.id_categoria) {
-              cargarPalabraAleatoriaPorCategoria(sala.id_categoria);
-          } else {
-              console.error('La sala no tiene una categoría asignada o no existe.');
-          }
-      })
-      .catch(error => {
-          console.error('Error al obtener la información de la sala:', error);
-      });
-}
-
-function cargarPalabraAleatoriaPorCategoria(idCategoria) {
-  fetch(`http://localhost:3000/getPalabrasPorCategoria/${idCategoria}`)
-      .then(response => {
-          if (!response.ok) {
-              throw new Error('Error al obtener palabras');
-          }
-          return response.json();
-      })
-      .then(palabras => {
-          if (palabras.length > 0) {
-              mostrarPalabraAleatoria(palabras);
-          } else {
-              console.log("No hay palabras disponibles en esta categoría.");
-          }
-      })
-      .catch(error => {
-          console.error('Error al cargar las palabras por categoría:', error);
-      });
-}
-
-function mostrarPalabraAleatoria(palabras) {
-  const indiceAleatorio = Math.floor(Math.random() * palabras.length);
-  const palabraAleatoria = palabras[indiceAleatorio].texto; // Asegúrate de que el campo 'texto' corresponda a tu base de datos.
-  const divPalabra = document.getElementById('randomWord');
-  divPalabra.textContent = palabraAleatoria; // Inserta la palabra aleatoria en el div.
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-  const room = sessionStorage.getItem('room');
-  if (room) {
-    obtenerCategoriaDeSala(room);
-  } else {
-      console.error('No se encontró el ID de la sala en sessionStorage.');
-  }
+socket.on('new_word', data => {
+    const wordContainer = document.getElementById('randomWord');
+    console.log(data.word)
+    wordContainer.textContent = data.word; // Muestra la palabra recibida
 });
+
 
 //Tiempo
 // Escuchar actualizaciones del temporizador desde el servidor

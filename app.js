@@ -43,7 +43,8 @@ io.on('connection', (socket) => {
                 if (!games[data.room]) {
                     games[data.room] = {
                         players: [],
-                        currentTurn: 0
+                        currentTurn: 0,
+                        categoryId: rows[0].id_categoria
                     };
                 }
 
@@ -91,7 +92,7 @@ io.on('connection', (socket) => {
 
     socket.on('drawing', (data) => {
         socket.to(data.room).emit('drawing', data);
-    });
+    }); 
 
     socket.on('disconnect', () => {
         console.log('Un usuario se ha desconectado');
@@ -105,6 +106,59 @@ io.on('connection', (socket) => {
         });
     });
 });
+
+function setNewWordForRoom(room, word) {
+    const game = games[room];
+    if (game) {
+        game.currentWord = word;
+        io.to(room).emit('new_word', { word }); // Avisa a todos los jugadores la nueva palabra
+    }
+}
+
+
+async function getWordsByCategory(categoryId) {
+    try {
+        const query = `
+            SELECT p.texto
+            FROM palabra p
+            INNER JOIN palabras_por_categoria ppc ON p.id_palabra = ppc.id_palabra
+            WHERE ppc.id_categoria = $1;
+        `;
+        const { rows } = await pool.query(query, [categoryId]);
+        return rows.map(row => row.texto);
+    } catch (error) {
+        console.error('Error fetching words from category:', error);
+        throw error;
+    }
+}
+
+
+// Función para asignar una nueva palabra al inicio de cada ronda
+function assignNewWord(room) {
+    // Supongamos que tienes una función que obtiene palabras por categoría
+    getWordsByCategory(games[room].category).then(words => {
+        const randomIndex = Math.floor(Math.random() * words.length);
+        const selectedWord = words[randomIndex];
+
+        // Guardar la palabra seleccionada en el estado del juego para referencia futura
+        games[room].currentWord = selectedWord;
+
+        // Envía la palabra seleccionada a todos los jugadores excepto al dibujante
+        games[room].players.forEach(player => {
+            if (!player.isDrawing) {
+                io.to(player.id).emit('new_word', { word: selectedWord });
+            }
+        });
+
+        // Envía una palabra oculta o un mensaje al dibujante
+        const drawer = games[room].players.find(p => p.isDrawing);
+        if (drawer) {
+            io.to(drawer.id).emit('new_word', { word: "*******" }); // Puede enviar la palabra real si desea
+        }
+    }).catch(error => {
+        console.error('Error fetching words for category:', error);
+    });
+}
 
 
 function startTimer(room) {
@@ -133,22 +187,36 @@ function updatePlayers(room) {
 }
 
 // Al cambiar los turnos
-function nextTurn(room) {
+async function nextTurn(room) {
     const game = games[room];
-    if (!game) return;
+    if (!game || game.players.length === 0) return;
 
     game.currentTurn = (game.currentTurn + 1) % game.players.length;
     game.players.forEach((player, index) => {
         player.isDrawing = (index === game.currentTurn);
     });
 
-    game.players.forEach(player => {
-        io.to(player.id).emit('set_drawer', {isDrawer: player.isDrawing});
-    });
+    try {
+        const words = await getWordsByCategory(game.categoryId);
+        if (words.length > 0) {
+            const randomWord = words[Math.floor(Math.random() * words.length)];
+            game.currentWord = randomWord;
+
+            game.players.forEach(player => {
+                io.to(player.id).emit('new_word', { word: player.isDrawing ? randomWord : "*******" });
+            });
+        } else {
+            console.error('No words available for category:', game.categoryId);
+        }
+    } catch (error) {
+        console.error('Failed to assign new word:', error);
+    }
 
     updatePlayers(room);
-    startTimer(room); // Reinicia el temporizador en el servidor para el nuevo turno
+    startTimer(room);
 }
+
+
 
 
 const PORT = 3000;
