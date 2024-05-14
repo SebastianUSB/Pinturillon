@@ -83,6 +83,9 @@ html, body {
     z-index: 3;
 }
 
+.correct-message {
+    color: green;
+}
 
 .chat-header {
     background-color: #007bff;

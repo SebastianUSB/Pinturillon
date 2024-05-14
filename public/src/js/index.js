@@ -167,6 +167,14 @@ document.addEventListener('DOMContentLoaded', function() {
       appendMessage(`${data.username}: ${data.message}`);
   });
 
+  // En pinturillon.js
+    socket.on('correct_guess', (data) => {
+        const message = `${data.username} ha adivinado la palabra correctamente!`;
+        appendMessage(message, 'correct-message');
+        // Puedes también tomar acciones adicionales como preparar para el siguiente turno
+    });
+
+
   // Escuchar si el usuario es el dibujante
   socket.on('set_drawer', (data) => {
     console.log("Set drawer: ", data.isDrawer);
@@ -201,7 +209,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     players.forEach(player => {
         const listItem = document.createElement('li');
-        listItem.textContent = `${player.username} - ${player.isDrawing ? 'Dibujando' : 'Adivinando'}`;
+        console.log(player)
+        console.log(player.score)
+        listItem.textContent = `${player.username} - ${player.isDrawing ? 'Dibujando' : 'Adivinando'} - ${player.score}`;
         scoreList.appendChild(listItem);
     });
 
