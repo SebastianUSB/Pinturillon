@@ -4,8 +4,6 @@ const socketIo = require('socket.io');
 const pool = require('./db');
 const Routes = require('./Routes/routes');
 
-
-
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
@@ -45,7 +43,9 @@ io.on('connection', (socket) => {
                         players: [],
                         currentTurn: 0,
                         categoryId: rows[0].id_categoria,
-                        guesses: []
+                        guesses: [],
+                        turnCount: 0,
+                        maxTurns: 3 
                     };
                 }
 
@@ -81,6 +81,7 @@ io.on('connection', (socket) => {
         }
     });
 
+    //Evento de enviar mensaje y verificacion de palabra
     socket.on('send_message', (data) => {
         const game = games[data.room];
         if (game && data.message.trim().toLowerCase() === game.currentWord.toLowerCase()) {
@@ -111,18 +112,16 @@ io.on('connection', (socket) => {
         }
     });
     
-    
-
+    //Funcion para calcular la puntuación
     function calculatePoints(timeLeft, numGuesses) {
         if (typeof timeLeft !== 'number' || typeof numGuesses !== 'number') {
             console.error('Invalid inputs to calculatePoints:', timeLeft, numGuesses);
-            return 0; // Devuelve 0 si los valores no son números
+            return 0;
         }
-        return 10 + timeLeft - numGuesses * 2; // Ejemplo de cálculo de puntos
+        return 10 + timeLeft - numGuesses * 2;
     }
-    
-    
 
+    //Evento: Siguiente turno
     socket.on('next_turn', () => {
         nextTurn(data.room);
     });
@@ -144,6 +143,7 @@ io.on('connection', (socket) => {
     });
 });
 
+// Trae las palabras segun la categoria de la sala
 async function getWordsByCategory(categoryId) {
     try {
         const query = `
@@ -160,11 +160,11 @@ async function getWordsByCategory(categoryId) {
     }
 }
 
-
+// Temporizador
 function startTimer(room) {
-    let timeLeft = 60; // Tiempo en segundos para cada turno
+    let timeLeft = 60;
     if (gameTimers[room]) {
-        clearInterval(gameTimers[room]); // Limpia el intervalo anterior si existe
+        clearInterval(gameTimers[room]);
     }
     gameTimers[room] = setInterval(() => {
         timeLeft--;
@@ -172,13 +172,12 @@ function startTimer(room) {
         io.to(room).emit('timer_update', { timeLeft });
         if (timeLeft <= 0) {
             clearInterval(gameTimers[room]);
-            nextTurn(room); // Llama a cambiar turno cuando el tiempo termina
+            nextTurn(room); // Cambiar turno cuando el tiempo termina
         }
     }, 1000);
 }
 
-
-
+// Actualizar los jugadores
 function updatePlayers(room) {
     const playerInfo = games[room].players.map(player => ({
         username: player.username,
@@ -195,6 +194,17 @@ async function nextTurn(room) {
 
     game.currentTurn = (game.currentTurn + 1) % game.players.length;
     game.guesses = []; // Reiniciar las adivinanzas para la nueva ronda
+    game.turnCount++; // Incrementa el contador de turnos
+
+    if (game.turnCount > game.maxTurns) {
+        // Notifica a todos en la sala que la partida ha terminado
+        io.to(room).emit('game_over', {message: "La partida ha terminado."});
+        console.log(`Partida en la sala ${room} ha terminado después de ${game.maxTurns} turnos.`);
+
+        // Reiniciar la configuración de la sala o cerrar la sala
+        delete games[room]; 
+        return;
+    }
 
     try {
         const words = await getWordsByCategory(game.categoryId);
@@ -217,10 +227,6 @@ async function nextTurn(room) {
     updatePlayers(room);
     startTimer(room); // Reiniciar el temporizador para el nuevo turno
 }
-
-
-
-
 
 const PORT = 3000;
 server.listen(PORT, () => {

@@ -1,91 +1,98 @@
-//Abrir y cerrar ventanas (opciones)
+/////////////////////////////////////////////////////////////////////////////////
+//////////////////Abrir y cerrar ventanas (opciones)/////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+
 document.getElementById('show1').addEventListener('click', function() {
     var container = document.getElementById('container1');
     if (container.style.display === 'block') {
-        container.style.display = 'none'; // Si está visible, ocultarlo
+        container.style.display = 'none'; 
     } else {
-        container.style.display = 'block'; // Si está oculto, mostrarlo
+        container.style.display = 'block'; 
     }
 });
 document.getElementById('show2').addEventListener('click', function() {
     var container = document.getElementById('container2');
     if (container.style.display === 'block') {
-        container.style.display = 'none'; // Si está visible, ocultarlo
+        container.style.display = 'none'; 
     } else {
-        container.style.display = 'block'; // Si está oculto, mostrarlo
+        container.style.display = 'block';
     }
 });
 document.getElementById('show3').addEventListener('click', function() {
     var container = document.getElementById('container3');
     if (container.style.display === 'block') {
-        container.style.display = 'none'; // Si está visible, ocultarlo
+        container.style.display = 'none'; 
     } else {
-        container.style.display = 'block'; // Si está oculto, mostrarlo
+        container.style.display = 'block'; 
     }
 });
 document.getElementById('show4').addEventListener('click', function() {
     var container = document.getElementById('container4');
     if (container.style.display === 'block') {
-        container.style.display = 'none'; // Si está visible, ocultarlo
+        container.style.display = 'none'; 
     } else {
-        container.style.display = 'block'; // Si está oculto, mostrarlo
+        container.style.display = 'block'; 
     }
 });
 document.getElementById('show5').addEventListener('click', function() {
     var container = document.getElementById('container5');
     if (container.style.display === 'block') {
-        container.style.display = 'none'; // Si está visible, ocultarlo
+        container.style.display = 'none'; 
     } else {
-        container.style.display = 'block'; // Si está oculto, mostrarlo
+        container.style.display = 'block'; 
     }
 });
 document.getElementById('show6').addEventListener('click', function() {
     var container = document.getElementById('container6');
     if (container.style.display === 'block') {
-        container.style.display = 'none'; // Si está visible, ocultarlo
+        container.style.display = 'none'; 
     } else {
-        container.style.display = 'block'; // Si está oculto, mostrarlo
+        container.style.display = 'block'; 
     }
 });
 document.getElementById('show7').addEventListener('click', function() {
     var container = document.getElementById('container7');
     if (container.style.display === 'block') {
-        container.style.display = 'none'; // Si está visible, ocultarlo
+        container.style.display = 'none'; 
     } else {
-        container.style.display = 'block'; // Si está oculto, mostrarlo
+        container.style.display = 'block'; 
     }
 });
 document.getElementById('show8').addEventListener('click', function() {
     var container = document.getElementById('container8');
     if (container.style.display === 'block') {
-        container.style.display = 'none'; // Si está visible, ocultarlo
+        container.style.display = 'none'; 
     } else {
-        container.style.display = 'block'; // Si está oculto, mostrarlo
+        container.style.display = 'block'; 
     }
 });
 
-// Abrir y cerrar ventana (Salas)
+/////////////////////////////////////////////////////////////////////////////////
+////////////////////////Abrir y cerrar ventana (Salas)///////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+
 
 document.getElementById('sala1').addEventListener('click', function() {
     var container = document.getElementById('containers1');
     if (container.style.display === 'block') {
-        container.style.display = 'none'; // Si está visible, ocultarlo
+        container.style.display = 'none'; 
     } else {
-        container.style.display = 'block'; // Si está oculto, mostrarlo
+        container.style.display = 'block'; 
     }
 });
 
 document.getElementById('sala2').addEventListener('click', function() {
     var container = document.getElementById('containers2');
     if (container.style.display === 'block') {
-        container.style.display = 'none'; // Si está visible, ocultarlo
+        container.style.display = 'none'; 
     } else {
-        container.style.display = 'block'; // Si está oculto, mostrarlo
+        container.style.display = 'block'; 
     }
 });
 
-
-//Ventana emergente (Alerta)
+/////////////////////////////////////////////////////////////////////////////////
+//////////////////////////Ventana emergente (Alerta)/////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
 
 function showBootstrapAlert(success, message) {
     var alertPlaceholder = document.getElementById('alert-placeholder');
@@ -96,13 +103,15 @@ function showBootstrapAlert(success, message) {
 
     alertPlaceholder.appendChild(wrapper);
 
-    // Hacer que la alerta se cierre automáticamente después de 5 segundos
     setTimeout(function() {
         $(wrapper).alert('close');
     }, 5000); // 5000 ms = 5 segundos
 }
 
-//GET Palabras
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////GET Palabras////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+
 function cargarPalabras() {
     const selects = [
         document.getElementById('seleccionPalabra'),
@@ -139,7 +148,10 @@ function cargarPalabras() {
         });
 }
 
-//GET Salas
+/////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////GET Salas//////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+
 function cargarSalas() {
     const seleccionSala = document.getElementById('seleccionSala');
 
@@ -184,7 +196,10 @@ function cargarSalasEnTabla() {
     });
 }
 
-//GET Categorías
+/////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////GET Categorías///////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+
 function cargarCategorias() {
     const selects = [
         document.getElementById('seleccionCategoria'),
@@ -223,7 +238,10 @@ function cargarCategorias() {
         });
 }
 
-//Filtro para mostrar las categorias de x palabras
+/////////////////////////////////////////////////////////////////////////////////
+////////////Filtro para mostrar las categorias de x palabras/////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+
 document.addEventListener('DOMContentLoaded', function () {
     const seleccionPalabraDesvincular = document.getElementById('seleccionPalabraDesvincular');
     const seleccionCategoriaDesvincular = document.getElementById('seleccionCategoriaDesvincular');
@@ -251,10 +269,10 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
+/////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////POST Palabras////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
 
-
-
-//POST Palabras
 document.addEventListener('DOMContentLoaded', function () {
     const enviarBtn = document.getElementById('Enviar1');
     if (enviarBtn) {
@@ -283,11 +301,11 @@ document.addEventListener('DOMContentLoaded', function () {
                         showBootstrapAlert(true, data.mensaje);
                         cargarPalabras();
                     }
-                    palabraInput.value = ''; // Limpiar el input después de enviar
+                    palabraInput.value = '';
                 })
                 .catch(error => {
                     console.error('Error al agregar la palabra:', error);
-                    showBootstrapAlert(false, error.message); // Mostrar el mensaje de error del servidor
+                    showBootstrapAlert(false, error.message);
                 });
             } else {
                 showBootstrapAlert(false, 'Por favor, escribe una palabra antes de enviar.');
@@ -296,7 +314,10 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
-//POST Categorias
+/////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////POST Categorias////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+
 document.addEventListener('DOMContentLoaded', function () {
     const enviarBtnCategoria = document.getElementById('Enviar2');
     const categoriaInput = document.getElementById('agregarCategoria');
@@ -323,13 +344,13 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(data => {
                 if (data.mensaje) {
                     showBootstrapAlert(true, data.mensaje);
-                    cargarCategorias();  // Asumiendo que tienes una función similar para recargar las categorías
+                    cargarCategorias();  
                 }
-                categoriaInput.value = ''; // Limpiar el input después de enviar
+                categoriaInput.value = ''; 
             })
             .catch(error => {
                 console.error('Error al agregar la categoría:', error);
-                showBootstrapAlert(false, error.message); // Mostrar el mensaje de error del servidor
+                showBootstrapAlert(false, error.message); 
             });
         } else {
             showBootstrapAlert(false, 'Por favor, escribe una categoría antes de enviar.');
@@ -337,9 +358,10 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
+/////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////DELETE Palabra////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
 
-
-//DELETE Palabra
 document.addEventListener('DOMContentLoaded', function () {
     const botonEliminar = document.getElementById('Eliminar');
     const seleccionPalabra = document.getElementById('seleccionPalabra');
@@ -376,7 +398,10 @@ function eliminarPalabra(id) {
     });
 }
 
-//DELETE categoria
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////DELETE categoria////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+
 document.addEventListener('DOMContentLoaded', function () {
     const botonEliminarCategoria = document.getElementById('Eliminar2');
     const seleccionCategoria = document.getElementById('seleccionCategoria');
@@ -405,7 +430,7 @@ function eliminarCategoria(id) {
     })
     .then(data => {
         showBootstrapAlert(true, data.mensaje);
-        cargarCategorias();  // Asumiendo que tienes una función similar para recargar las categorías
+        cargarCategorias();
     })
     .catch(error => {
         console.error('Error al eliminar la categoría:', error);
@@ -413,8 +438,10 @@ function eliminarCategoria(id) {
     });
 }
 
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////PUT palabra/////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
 
-//PUT palabra
 document.addEventListener('DOMContentLoaded', function () {
     const botonEditar = document.getElementById('Editar');
     const seleccionPalabraEditar = document.getElementById('seleccionPalabraEditar');
@@ -464,7 +491,10 @@ function actualizarPalabra(id, texto) {
     });
 }
 
-//PUT Categoria
+/////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////PUT Categoria/////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+
 document.addEventListener('DOMContentLoaded', function () {
     const botonEditarCategoria = document.getElementById('Editar2');
     const seleccionCategoriaEditar = document.getElementById('seleccionCategoriaEditar');
@@ -504,7 +534,7 @@ function actualizarCategoria(id, nombre) {
     })
     .then(data => {
         showBootstrapAlert(true, data.mensaje);
-        cargarCategorias();  // Asegúrate de tener esta función para recargar la lista de categorías
+        cargarCategorias(); 
     })
     .catch(error => {
         console.error('Error al actualizar la categoría:', error);
@@ -512,7 +542,10 @@ function actualizarCategoria(id, nombre) {
     });
 }
 
-//Asociar Palabra a una categoria
+/////////////////////////////////////////////////////////////////////////////////
+///////////////////////Asociar Palabra a una categoria///////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+
 document.addEventListener('DOMContentLoaded', function () {
     const botonAsociar = document.getElementById('Asociar');
     const seleccionPalabra = document.getElementById('seleccionPalabraCategoria');
@@ -560,7 +593,10 @@ function asociarPalabraCategoria(id_palabra, id_categoria) {
     });
 }
 
-//Desvincular Palabra Categoria
+/////////////////////////////////////////////////////////////////////////////////
+//////////////////////Desvincular Palabra Categoria//////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+
 document.addEventListener('DOMContentLoaded', function () {
     const botonDesvincular = document.getElementById('Desvincular');
     const seleccionPalabraDesvincular = document.getElementById('seleccionPalabraDesvincular');
@@ -603,8 +639,10 @@ function desvincularPalabraCategoria(id_palabra, id_categoria) {
         showBootstrapAlert(false, error.message || 'Error al desvincular la palabra de la categoría.');
     });
 }
+/////////////////////////////////////////////////////////////////////////////////
+//////////////////////////Crear Sala de Juego////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
 
-//Crear Sala de Juego
 document.addEventListener('DOMContentLoaded', function () {
     const botonCrear = document.getElementById('Crear');
     const seleccionCategoriaJuego = document.getElementById('seleccionCategoriaJuego');
@@ -655,7 +693,10 @@ function crearSala(nombre, id_categoria) {
     });
 }
 
-//Eliminar Sala
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////Eliminar Sala///////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+
 document.getElementById('Eliminar3').addEventListener('click', function() {
     const idSala = document.getElementById('seleccionSala').value;
 
@@ -679,7 +720,9 @@ document.getElementById('Eliminar3').addEventListener('click', function() {
     });
 });
 
-//Unirse a un sala
+/////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////Unirse a un sala///////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
 
 document.addEventListener('DOMContentLoaded', function(){
     const socket = io();
@@ -689,7 +732,6 @@ document.addEventListener('DOMContentLoaded', function(){
     const usernameInput = document.getElementById('username');
     const avatarImg = document.getElementById('selectedAvatar');
 
-    // Manejar la recepción de la respuesta una vez y no cada vez que se envía el formulario
     socket.on('joined_room', function(data){
         if(data.success){
             sessionStorage.setItem('username', usernameInput.value.trim());
@@ -709,7 +751,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
         if(!room || !username){
             showBootstrapAlert(false, 'Por favor, completa todos los campos');
-            return; // Asegúrate de salir de la función si hay campos inválidos.
+            return; 
         }
 
         // Emitir evento para unirme a la sala
@@ -717,8 +759,9 @@ document.addEventListener('DOMContentLoaded', function(){
     });
 });
 
-
-//Funcion de inicio de pagina
+/////////////////////////////////////////////////////////////////////////////////
+////////////////////////Funcion de inicio de pagina//////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
 
 document.addEventListener('DOMContentLoaded', function() {
     cargarPalabras();
